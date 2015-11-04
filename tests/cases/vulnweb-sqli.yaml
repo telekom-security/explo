@@ -1,0 +1,17 @@
+---
+name: exploit
+description: This request sends a GET request to check for an sql injection
+module: http
+parameter:
+    url: http://testphp.vulnweb.com/listproducts.php?cat=1%27
+    method: GET
+    extract:
+        content: "#content"
+---
+name: result
+description: Check if sql injection exists
+module: report
+source: exploit.extracted.content
+parameter:
+    type: stringfind
+    value: You have an error in your SQL syntax
