@@ -6,7 +6,7 @@ parameter:
     url: http://testphp.vulnweb.com/listproducts.php?cat=1%27
     method: GET
     extract:
-        content: "#content"
+        content: [CSS, "#content"]
 ---
 name: result
 description: Check if sql injection exists

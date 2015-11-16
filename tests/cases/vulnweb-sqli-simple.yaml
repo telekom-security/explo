@@ -5,6 +5,5 @@ parameter:
     url: http://testphp.vulnweb.com/listproducts.php?cat=1%27
     method: GET
     extract:
-        css:
-            content: "#content"
+        content: [CSS, "#content"]
     find: You have an error in your SQL syntax
