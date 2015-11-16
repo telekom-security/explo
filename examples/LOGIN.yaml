@@ -1,0 +1,20 @@
+name: login
+description: login with test credentials
+module: http
+parameter:
+    url: http://example.com/login
+    method: POST
+    body:
+        username: user
+        password: password
+---
+name: exploit
+description: exploit as the previous logged in user
+module: http
+parameter:
+    url: http://example.com/profile
+    method: POST
+    body:
+        inject: "'Foobar"
+    cookies: login.response.cookies
+    find: You have an error in your SQL syntax
