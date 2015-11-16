@@ -1,12 +1,14 @@
 """ Core HTTP functionalities """
 import requests
+import re
 from pyquery import PyQuery as pq
 
-def execute(block, scope=None):
+def execute(block, scope):
     """ Do HTTP request with options from block """
     required_fields = ['method', 'url']
 
     opts = block['parameter']
+    name = block['name']
 
     if not all(k in opts for k in required_fields):
         raise Exception('not all required parameters were passed')
@@ -16,38 +18,60 @@ def execute(block, scope=None):
 
     resp = requests.request(opts['method'], opts['url'], headers=headers, data=data)
 
-    ret = {
+    print('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+
+    scope[name] = {
         'response': {
-            'content':resp.content,
+            'content':resp.text,
             'cookies':resp.cookies
         }
     }
 
-    print('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+    success = True
 
     if 'extract' in opts:
-        ret['extracted'] = extract(resp.content, opts['extract'])
+        scope[name]['extracted'] = extract(resp.text, opts['extract'])
 
-    return ret
+    if 'find' in opts:
+        success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
 
-def extract(data, fields):
+        if not success:
+            print("Could not find '%s' in response body" % opts['find'])
+        else:
+            print("Found '%s' in response body" % opts['find'])
+
+    return success, scope
+
+def extract(data, extract_fields):
     """ Extract selectors from a html document """
-    doc = pq(data)
 
     result = {}
 
-    for key, val in fields.items():
-        res = doc(val)
-        found = None
+    for name, opts in extract_fields.items():
+        if len(opts) != 2:
+            raise Exception('extract error: mailformed extract entry.')
 
-        if len(res) > 1:
-            raise Exception('extract error: found more than 1 result for "%s"' % val)
+        method, pattern = opts
 
-        if res.attr('value'):
-            found = res.attr('value')
-        elif res.text():
-            found = res.text()
+        if method == 'CSS':
+            doc = pq(data)
 
-        result[key] = found
+            res = doc(pattern)
+            found = None
+
+            if len(res) > 1:
+                raise Exception('extract error: found more than 1 result for "%s"' % pattern)
+
+            if res.attr('value'):
+                found = res.attr('value')
+            elif res.text():
+                found = res.text()
+
+            result[name] = found
+
+        if method == 'REGEX':
+            regex_res = re.search(pattern, data, re.MULTILINE)
+            if regex_res:
+                result[name] = regex_res.group('extract')
 
     return result

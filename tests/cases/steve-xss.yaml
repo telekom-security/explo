@@ -1,4 +1,3 @@
----
 name: exploit
 description: This request sends a POST payload to exploit a XSS vulnerability
 module: http
@@ -10,13 +9,4 @@ parameter:
         content-type: application/x-www-form-urlencoded
     body:
         text: <div id=explo>explo</div>
-    extract:
-        explo: "#explo"
----
-name: result
-description: Check if payload was injected successfull
-module: report
-source: exploit.extracted.explo
-parameter:
-    type: stringcompare
-    value: explo
+    find: explo

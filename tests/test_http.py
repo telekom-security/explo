@@ -24,10 +24,11 @@ parameter:
     body:
         text: <div id=explo>explo</div>
     extract:
-        explo: "#explo"
+        exploCSS: [CSS, "#explo"]
+        exploRegexp: [REGEX, "<div id=explo>(?P<extract>.*?)</div>"]
 """
 
-    body = b'<div id=explo>explo</div>'
+    body = '<div id=explo>explo</div>'
 
     responses.add(responses.GET, 'http://test.com/',
                   body=body, status=200,
@@ -35,16 +36,17 @@ parameter:
 
     blocks = explo.core.load_blocks(block_raw)
 
-    ret = http.execute(blocks[0])
+    _, scope = http.execute(blocks[0], {})
 
-    assert ret['response']['content'] == body
-    assert ret['extracted']['explo'] == 'explo'
+    assert scope['test']['response']['content'] == body
+    assert scope['test']['extracted']['exploCSS'] == 'explo'
+    assert scope['test']['extracted']['exploRegexp'] == 'explo'
 
 def test_extract_html():
     """ Test invalid block (required field description/parameter missing) """
 
     content = "<html><body><input id=test value=foobar></body></html>"
 
-    ret = http.extract(content, {'input':'#test'})
+    ret = http.extract(content, {'input':['CSS', '#test']})
 
     assert 'input' in ret and ret['input'] == 'foobar'

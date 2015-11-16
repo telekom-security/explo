@@ -18,10 +18,12 @@ def execute(block, scope=None):
 
     print("Matching %s for: '%s'" % (block['source'], opts['value']))
 
-    if opts['type'] == 'stringcompare':
-        return content == opts['value']
+    success = False
 
-    if opts['type'] == 'stringfind':
-        return opts['value'] in content
+    if opts['type'] == 'stringcompare' and content == opts['value']:
+        success = True
 
-    return False
+    if opts['type'] == 'stringfind' and opts['value'] in content:
+        success = True
+
+    return success, scope
