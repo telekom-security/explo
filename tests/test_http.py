@@ -50,3 +50,53 @@ def test_extract_html():
     ret = http.extract(content, {'input':['CSS', '#test']})
 
     assert 'input' in ret and ret['input'] == 'foobar'
+
+@responses.activate
+def test_cookies():
+    """ Test basic cookies support  """
+
+    blocks_raw = """
+name: get_cookie
+description: Get a cookie
+module: http
+parameter:
+    url: http://test.com/get
+    method: GET
+---
+name: test
+description: test
+module: http
+parameter:
+    url: http://test.com/test
+    cookies: get_cookie.response.cookies
+    method: GET
+"""
+
+    cookie = 'foo=bar'
+
+    def request_get_cookie(request):
+        """ Return a simple cookie """
+        headers = {'Set-Cookie': cookie}
+
+        return (200, headers, '')
+
+    def request_test_cookie(request):
+        """ Return a simple cookie """
+        assert 'Cookie' in request.headers and request.headers['Cookie'] == cookie
+
+        return (200, {}, '')
+
+    responses.add_callback(
+        responses.GET, 'http://test.com/get',
+        callback=request_get_cookie,
+        content_type='text/html'
+    )
+
+    responses.add_callback(
+        responses.GET, 'http://test.com/test',
+        callback=request_test_cookie,
+        content_type='text/html'
+    )
+
+    blocks = explo.core.load_blocks(blocks_raw)
+    assert explo.core.proccess_blocks(blocks, debug=True)

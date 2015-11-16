@@ -44,11 +44,21 @@ def execute(block, scope, debug):
     opts = block['parameter']
     name = block['name']
 
+    cookies = dict()
+
     if not all(k in opts for k in required_fields):
         raise Exception('not all required parameters were passed')
 
     headers = opts.get('headers', {})
     data = opts.get('body', {})
+    cookies_path = opts.get('cookies', '')
+
+    if cookies_path != '':
+        try:
+            cookie_module = cookies_path.split('.', 1)[0]
+            cookies = scope[cookie_module]['response']['cookies']
+        except KeyError:
+            print('warning: no cookies found in %s' % cookies_path)
 
     # Use mustache template on string
     if isinstance(data, dict):
@@ -61,7 +71,7 @@ def execute(block, scope, debug):
     for key, val in headers.items():
         headers[key] = pystache.render(val, scope)
 
-    req = requests.Request(opts['method'], opts['url'], headers=headers, data=data)
+    req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
     request_prepared = req.prepare()
 
     sess = requests.Session()
@@ -72,7 +82,8 @@ def execute(block, scope, debug):
     scope[name] = {
         'response': {
             'content':resp.text,
-            'cookies':resp.cookies
+            'cookies':resp.cookies,
+            'headers':resp.headers
         }
     }
 

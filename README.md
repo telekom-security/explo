@@ -51,6 +51,8 @@ It is possible to share and easily re-test a specific vulnerability with this to
 
 There are a few examples testcases in the `examples/` folder.
 
+    explo examples/SQLI_simple_testphp.vulnweb.com.yaml
+
 ### Modules
 
 Modules can be added to improve the functionality and testable security issues.
