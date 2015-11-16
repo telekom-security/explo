@@ -4,8 +4,29 @@ import re
 import pystache
 from pyquery import PyQuery as pq
 
-def execute(block, scope):
-    """ Do HTTP request with options from block """
+def pretty_print_request(req):
+    """ Print a request """
+    print('{}\n{}\n{}\n\n{}'.format(
+        '--- begin http request ---',
+        req.method + ' ' + req.url,
+        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+        req.body,
+    ))
+
+def pretty_print_response(res):
+    """ Print a response """
+    print('--- begin http response ---')
+    # Status line
+    print('HTTP/1.1 %s %s' % (res.status_code, res.reason))
+
+    # Headers
+    print('\n'.join(name + ': ' + value for name, value in res.headers.items()))
+    print(res.text)
+
+def execute(block, scope, debug):
+    """
+    Creates a HTTP request and sends it. Also does basic extracting and finding in the response text.
+    """
     required_fields = ['method', 'url']
 
     opts = block['parameter']
@@ -28,7 +49,11 @@ def execute(block, scope):
     for key, val in headers.items():
         headers[key] = pystache.render(val, scope)
 
-    resp = requests.request(opts['method'], opts['url'], headers=headers, data=data)
+    req = requests.Request(opts['method'], opts['url'], headers=headers, data=data)
+    request_prepared = req.prepare()
+
+    sess = requests.Session()
+    resp = sess.send(request_prepared)
 
     print('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
@@ -51,6 +76,10 @@ def execute(block, scope):
             print("Could not find '%s' in response body" % opts['find'])
         else:
             print("Found '%s' in response body" % opts['find'])
+
+    if debug:
+        pretty_print_request(request_prepared)
+        pretty_print_response(resp)
 
     return success, scope
 

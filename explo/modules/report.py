@@ -1,6 +1,6 @@
 """ Core HTTP functionalities """
 
-def execute(block, scope=None):
+def execute(block, scope=None, debug=False):
     """ Match results """
     required_fields = ['type', 'value']
 
