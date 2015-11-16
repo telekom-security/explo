@@ -38,22 +38,18 @@ It is possible to share and easily re-test a specific vulnerability with this to
 
 1. Clone the repository
 
-    ```
     git clone https://github.com/dtag-dev-sec/explo
-    ```
 
 2. Install explo
 
-    ```
     cd explo
     python setup.py install
-    ```
 
 ### Usage
 
-```
-explo [--debug] testcase.yaml
-```
+    explo [--debug] testcase.yaml
+
+There are a few examples testcases in the `examples/` folder.
 
 ### Modules
 
@@ -70,5 +66,3 @@ The following data is made available for other modules:
 * extracted content: `response.extracted.variable_name`
 
 If a `find` parameter is set, a regular expression match is executed on the response body. If this fails, this module returns a failure and thus stopping the executing of the current workflow.
-
-

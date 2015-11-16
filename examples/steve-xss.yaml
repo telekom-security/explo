@@ -5,8 +5,8 @@ parameter:
     url: http://www.steve.org.uk/Security/XSS/Tutorial/simple.cgi
     method: POST
     headers:
-        user-agent: Mozilla/5.0
-        content-type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0
+        Content-Type: application/x-www-form-urlencoded
     body:
         text: <div id=explo>explo</div>
     find: explo

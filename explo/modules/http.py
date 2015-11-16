@@ -6,25 +6,34 @@ from pyquery import PyQuery as pq
 
 def pretty_print_request(req):
     """ Print a request """
-    print('{}\n{}\n{}\n\n{}'.format(
-        '--- begin http request ---',
+
+    output = '{} HTTP/1.1\n{}\n\n{}'.format(
         req.method + ' ' + req.url,
         '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
         req.body,
-    ))
+    )
+
+    print('\n## HTTP request')
+    print(output)
 
 def pretty_print_response(res):
     """ Print a response """
-    print('--- begin http response ---')
+
+
     # Status line
-    print('HTTP/1.1 %s %s' % (res.status_code, res.reason))
+    output = 'HTTP/1.1 %s %s\n' % (res.status_code, res.reason)
 
     # Headers
     for name, value in res.headers.items():
-        print('%s: %s' % (name, value))
+        output += '%s: %s\n' % (name, value)
+
+    output += '\n'
 
     # Body
-    print(res.text)
+    output += res.text
+
+    print('\n## HTTP response')
+    print(output)
 
 def execute(block, scope, debug):
     """
