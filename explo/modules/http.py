@@ -20,7 +20,10 @@ def pretty_print_response(res):
     print('HTTP/1.1 %s %s' % (res.status_code, res.reason))
 
     # Headers
-    print('\n'.join(name + ': ' + value for name, value in res.headers.items()))
+    for name, value in res.headers.items():
+        print('%s: %s' % (name, value))
+
+    # Body
     print(res.text)
 
 def execute(block, scope, debug):

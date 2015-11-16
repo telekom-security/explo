@@ -1,4 +1,5 @@
-## explo
+explo
+=====
 
 explo is a simple tool to describe security issues in a human and machine readable format.
 By defining a request/response workflow explo is able to reproduce the exploiting of security issues without the
@@ -32,6 +33,27 @@ need of writing a script. This allows chaining of requests.
 In this example definition file the security issue is tested by executing 2 steps which are run from top to bottom. The last step returns a success or failure, depending on the string 'You have an error in your SQL syntax' to be found.
 
 It is possible to share and easily re-test a specific vulnerability with this tool.
+
+### Installation
+
+1. Clone the repository
+
+    ```
+    git clone https://github.com/dtag-dev-sec/explo
+    ```
+
+2. Install explo
+
+    ```
+    cd explo
+    python setup.py install
+    ```
+
+### Usage
+
+```
+explo [--debug] testcase.yaml
+```
 
 ### Modules
 
