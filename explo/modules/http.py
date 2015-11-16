@@ -1,6 +1,7 @@
 """ Core HTTP functionalities """
 import requests
 import re
+import pystache
 from pyquery import PyQuery as pq
 
 def execute(block, scope):
@@ -15,6 +16,17 @@ def execute(block, scope):
 
     headers = opts.get('headers', {})
     data = opts.get('body', {})
+
+    # Use mustache template on string
+    if isinstance(data, dict):
+        for key, val in data.items():
+            data[key] = pystache.render(val, scope)
+    elif isinstance(data, basestring):
+        data = pystache.render(data, scope)
+
+    # Use mustache template on headers
+    for key, val in headers.items():
+        headers[key] = pystache.render(val, scope)
 
     resp = requests.request(opts['method'], opts['url'], headers=headers, data=data)
 

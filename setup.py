@@ -12,6 +12,7 @@ setup(
         'requests',
         'pyyaml',
         'colorama',
-        'pyquery'
+        'pyquery',
+        'pystache'
     ]
 )

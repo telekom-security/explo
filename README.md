@@ -7,35 +7,46 @@ need of writing a script. This allows chaining of requests.
 ### Example (POST form with CSRF field)
 
 	---
-    name: CSRF
+    name: get_csrf
 	description: This request receives a csrf token to save it for further exploitation
     module: http
     parameter:
-        url: http://example.com/login
+        url: http://example.com/contact
         method: GET
 	    header:
             user-agent: Mozilla/5.0
         extract:
-            csrf: form#login > .input[hidden]
+            csrf: [CSS, "#csrf_token"]
 	---
 	name: Exploit
     description: Exploit issue with valid csrf token
     module: http
-	source: CSRF.extracted.csrf
     parameter:
-        url: http://example.com/login
+        url: http://example.com/contact
         method: POST
-        data: csrf={{csrf}}&username=' SQL INJECTION
+        body:
+            csrf: "{{get_csrf.extracted.csrf}}"
+            username: "' SQL INJECTION"
+        find: You have an error in your SQL syntax
 
-    ---
-    name: Report result
-	description: Check if the injection returned an error
-    module: match
-	source: Exploit.response
-	parameter:
-        type: stringfind
-        value: You have an error in your SQL syntax
+In this example definition file the security issue is tested by executing 2 steps which are run from top to bottom. The last step returns a success or failure, depending on the string 'You have an error in your SQL syntax' to be found.
 
-In this example definition file the security issue is tested by executing 4 steps which are run from top to bottom. The last action block (REPORT) matches for a string or regular expression and returns the result.
+It is possible to share and easily re-test a specific vulnerability with this tool.
 
-It is possible to share and easily retest a specific vulnerability with this tool.
+### Modules
+
+Modules can be added to improve the functionality and testable security issues.
+
+#### http (basic)
+
+The http modules allows to make http request, extract content and search for content. The http as well as headers can be passed.
+
+The following data is made available for other modules:
+
+* the http response body: `stepname.response.content` 
+* the http response cookies: `stepname.response.cookies`
+* extracted content: `response.extracted.variable_name`
+
+If a `find` parameter is set, a regular expression match is executed on the response body. If this fails, this module returns a failure and thus stopping the executing of the current workflow.
+
+

@@ -79,4 +79,4 @@ def module_execute(block, scope):
         mod = import_module('explo.modules.%s' % module)
         return mod.execute(block, scope)
     except Exception as exc:
-        raise Exception('can not import module %s: %s' % (module, exc))
+        raise Exception('[%s] module exception: %s' % (module, exc))
