@@ -48,6 +48,7 @@ It is possible to share and easily re-test a specific vulnerability with this to
 ### Usage
 
     explo [--debug] testcase.yaml
+    explo [--debug] examples/*.yaml
 
 There are a few examples testcases in the `examples/` folder.
 

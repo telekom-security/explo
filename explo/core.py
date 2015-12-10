@@ -1,7 +1,6 @@
 """ Main handler """
 import click
 import yaml
-import sys
 from importlib import import_module
 from colorama import Fore, init
 
@@ -12,31 +11,41 @@ class ResultException(ExploException):
     pass
 
 @click.command()
-@click.argument('filename')
+@click.argument('files', nargs=-1)
 @click.option('--debug', is_flag=True)
-def main(filename, debug):
-    """ Read file and process blocks """
+@click.pass_context
+def main(ctx, files, debug):
+    """ Get file list from args and execute """
 
     init(autoreset=True)
+
+    if len(files) <= 0:
+        print(main.get_help(ctx))
+
+    for filename in files:
+        explo_file(filename, debug)
+
+def explo_file(filename, debug):
+    """ Parse file and execute blocks """
 
     try:
         fhandle = open(filename, 'r')
         content = fhandle.read()
     except IOError as err:
-        sys.exit('could not open file %s: %s' % (filename, err))
+        return print('could not open file %s: %s' % (filename, err))
 
     try:
         blocks = load_blocks(content)
     except yaml.YAMLError as err:
-        sys.exit('error parsing document: %s' % err)
+        return print('error parsing document: %s' % err)
 
     validate_blocks(blocks)
     result = proccess_blocks(blocks, debug)
 
     if result:
-        print(Fore.GREEN + "===> Success")
+        print(Fore.GREEN + "===> Success ({})".format(filename))
     else:
-        print(Fore.RED + "===> Failed")
+        print(Fore.RED + "===> Failed ({})".format(filename))
 
 def load_blocks(content):
     """ Load documents/blocks from a YAML file """
