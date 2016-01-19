@@ -20,7 +20,7 @@ def main(ctx, files, debug):
     init(autoreset=True)
 
     if len(files) <= 0:
-        print(main.get_help(ctx))
+        click.echo(main.get_help(ctx))
 
     for filename in files:
         explo_file(filename, debug)
@@ -32,20 +32,20 @@ def explo_file(filename, debug):
         fhandle = open(filename, 'r')
         content = fhandle.read()
     except IOError as err:
-        return print('could not open file %s: %s' % (filename, err))
+        return click.echo('could not open file %s: %s' % (filename, err))
 
     try:
         blocks = load_blocks(content)
     except yaml.YAMLError as err:
-        return print('error parsing document: %s' % err)
+        return click.echo('error parsing document: %s' % err)
 
     validate_blocks(blocks)
     result = proccess_blocks(blocks, debug)
 
     if result:
-        print(Fore.GREEN + "===> Success ({})".format(filename))
+        click.echo(Fore.GREEN + "===> Success ({})".format(filename))
     else:
-        print(Fore.RED + "===> Failed ({})".format(filename))
+        click.echo(Fore.RED + "===> Failed ({})".format(filename))
 
 def load_blocks(content):
     """ Load documents/blocks from a YAML file """
@@ -71,7 +71,7 @@ def proccess_blocks(blocks, debug=False):
 
     for block in blocks:
         name = block['name']
-        print(Fore.YELLOW + "===> Block '%s'" % name)
+        click.echo(Fore.YELLOW + "===> Block '%s'" % name)
 
         last_result, scope = module_execute(block, scope, debug)
 

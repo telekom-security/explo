@@ -1,4 +1,5 @@
 """ Core HTTP functionalities """
+import click
 
 def execute(block, scope=None, debug=False):
     """ Match results """
@@ -16,7 +17,7 @@ def execute(block, scope=None, debug=False):
     except Exception:
         raise Exception('the source field "%s" was not found in the current scope' % block['source'])
 
-    print("Matching %s for: '%s'" % (block['source'], opts['value']))
+    click.echo("Matching %s for: '%s'" % (block['source'], opts['value']))
 
     success = False
 

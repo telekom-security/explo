@@ -1,5 +1,6 @@
 """ Core HTTP functionalities """
 import requests
+import click
 import re
 import pystache
 from pyquery import PyQuery as pq
@@ -13,8 +14,8 @@ def pretty_print_request(req):
         req.body,
     )
 
-    print('\n## HTTP request')
-    print(output)
+    click.echo('\n## HTTP request')
+    click.echo(output)
 
 def pretty_print_response(res):
     """ Print a response """
@@ -32,8 +33,8 @@ def pretty_print_response(res):
     # Body
     output += res.text
 
-    print('\n## HTTP response')
-    print(output)
+    click.echo('\n## HTTP response')
+    click.echo(output)
 
 def execute(block, scope, debug):
     """
@@ -58,7 +59,7 @@ def execute(block, scope, debug):
             cookie_module = cookies_path.split('.', 1)[0]
             cookies = scope[cookie_module]['response']['cookies']
         except KeyError:
-            print('warning: no cookies found in %s' % cookies_path)
+            click.echo('warning: no cookies found in %s' % cookies_path)
 
     # Use mustache template on string
     if isinstance(data, dict):
@@ -77,7 +78,7 @@ def execute(block, scope, debug):
     sess = requests.Session()
     resp = sess.send(request_prepared)
 
-    print('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+    click.echo('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
     scope[name] = {
         'response': {
@@ -96,9 +97,9 @@ def execute(block, scope, debug):
         success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
 
         if not success:
-            print("Could not find '%s' in response body" % opts['find'])
+            click.echo("Could not find '%s' in response body" % opts['find'])
         else:
-            print("Found '%s' in response body" % opts['find'])
+            click.echo("Found '%s' in response body" % opts['find'])
 
     if debug:
         pretty_print_request(request_prepared)
