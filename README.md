@@ -2,14 +2,13 @@ explo
 =====
 
 explo is a simple tool to describe security issues in a human and machine readable format.
-By defining a request/response workflow explo is able to reproduce the exploiting of security issues without the
+By defining a request/response workflow explo is able to exploit security issues without the
 need of writing a script. This allows chaining of requests.
 
 ### Example (POST form with CSRF field)
 
-	---
     name: get_csrf
-	description: This request receives a csrf token to save it for further exploitation
+	description: request to extracts CSRF token
     module: http
     parameter:
         url: http://example.com/contact
@@ -17,10 +16,10 @@ need of writing a script. This allows chaining of requests.
 	    header:
             user-agent: Mozilla/5.0
         extract:
-            csrf: [CSS, "#csrf_token"]
+            csrf: [CSS, "#csrf"]
 	---
-	name: Exploit
-    description: Exploit issue with valid csrf token
+	name: exploit
+    description: exploit vulnerability with valid csrf token
     module: http
     parameter:
         url: http://example.com/contact
@@ -30,9 +29,7 @@ need of writing a script. This allows chaining of requests.
             username: "' SQL INJECTION"
         find: You have an error in your SQL syntax
 
-In this example definition file the security issue is tested by executing 2 steps which are run from top to bottom. The last step returns a success or failure, depending on the string 'You have an error in your SQL syntax' to be found.
-
-It is possible to share and easily re-test a specific vulnerability with this tool.
+In this example definition file the security issue is tested by executing two steps which are run from top to bottom. The last step returns a success or failure, depending on the string 'You have an error in your SQL syntax' to be found.
 
 ### Installation
 
