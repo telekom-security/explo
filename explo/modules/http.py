@@ -38,7 +38,7 @@ def pretty_print_response(res):
 
 def execute(block, scope, debug):
     """
-    Creates a HTTP request and sends it. Also does basic extracting and finding in the response text.
+    Simple HTTP request, also does basic extracting and finding in the response text
     """
     required_fields = ['method', 'url']
 
@@ -53,6 +53,7 @@ def execute(block, scope, debug):
     headers = opts.get('headers', {})
     data = opts.get('body', {})
     cookies_path = opts.get('cookies', '')
+    allow_redirects = opts.get('allow_redirects', False)
 
     if cookies_path != '':
         try:
@@ -76,9 +77,10 @@ def execute(block, scope, debug):
     request_prepared = req.prepare()
 
     sess = requests.Session()
-    resp = sess.send(request_prepared)
+    resp = sess.send(request_prepared, allow_redirects=allow_redirects)
 
-    click.echo('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+    if debug:
+        click.echo('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
     scope[name] = {
         'response': {
@@ -96,10 +98,11 @@ def execute(block, scope, debug):
     if 'find' in opts:
         success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
 
-        if not success:
-            click.echo("Could not find '%s' in response body" % opts['find'])
-        else:
-            click.echo("Found '%s' in response body" % opts['find'])
+        if debug:
+            if not success:
+                click.echo("Could not find '%s' in response body" % opts['find'])
+            else:
+                click.echo("Found '%s' in response body" % opts['find'])
 
     if debug:
         pretty_print_request(request_prepared)

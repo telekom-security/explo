@@ -5,9 +5,11 @@ from importlib import import_module
 from colorama import Fore, init
 
 class ExploException(Exception):
+    """ Base class for exceptions """
     pass
 
-class ResultException(ExploException):
+class ParserException(ExploException):
+    """ Exception thrown when parsing an explo yaml file failed """
     pass
 
 @click.command()
@@ -23,29 +25,38 @@ def main(ctx, files, debug):
         click.echo(main.get_help(ctx))
 
     for filename in files:
-        explo_file(filename, debug)
+        try:
+            result = from_file(filename, debug)
 
-def explo_file(filename, debug):
-    """ Parse file and execute blocks """
+            if result:
+                click.echo(Fore.GREEN + "===> Success ({})".format(filename))
+            else:
+                click.echo(Fore.RED + "===> Failed ({})".format(filename))
+        except ExploException as exc:
+            click.echo(Fore.RED + 'error processing {}: {}'.format(filename, exc))
+
+
+def from_file(filename, debug):
+    """ Read file and pass to explo_content """
 
     try:
         fhandle = open(filename, 'r')
         content = fhandle.read()
     except IOError as err:
-        return click.echo('could not open file %s: %s' % (filename, err))
+        return ExploException('could not open file %s: %s' % (filename, err))
+
+    return from_content(content, debug)
+
+def from_content(content, debug):
+    """ Load, validate and process blocks """
 
     try:
         blocks = load_blocks(content)
     except yaml.YAMLError as err:
-        return click.echo('error parsing document: %s' % err)
+        return ExploException('error parsing document: %s' % err)
 
     validate_blocks(blocks)
-    result = proccess_blocks(blocks, debug)
-
-    if result:
-        click.echo(Fore.GREEN + "===> Success ({})".format(filename))
-    else:
-        click.echo(Fore.RED + "===> Failed ({})".format(filename))
+    return proccess_blocks(blocks, debug)
 
 def load_blocks(content):
     """ Load documents/blocks from a YAML file """
@@ -61,7 +72,7 @@ def validate_blocks(blocks):
         required_fields = ['name', 'description', 'module', 'parameter']
 
         if not all(k in block for k in required_fields):
-            raise ExploException('not all required field in block %d' % count)
+            raise ParserException('not all required field in block %d' % count)
 
 def proccess_blocks(blocks, debug=False):
     """ Processes all blocks """
@@ -71,7 +82,9 @@ def proccess_blocks(blocks, debug=False):
 
     for block in blocks:
         name = block['name']
-        click.echo(Fore.YELLOW + "===> Block '%s'" % name)
+
+        if debug:
+            click.echo(Fore.YELLOW + "===> Block '%s'" % name)
 
         last_result, scope = module_execute(block, scope, debug)
 
