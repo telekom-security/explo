@@ -66,3 +66,19 @@ The following data is made available for other modules:
 * extracted content: `response.extracted.variable_name`
 
 If a `find` parameter is set, a regular expression match is executed on the response body. If this fails, this module returns a failure and thus stopping the executing of the current workflow.
+
+Parameter examples:
+
+    parameter:
+        url: http://example.com
+        method: GET
+        allow_redirects: True
+        headers:
+            User-Agent: explo
+            Content-Type: abc
+        body:
+            key: value
+        find: (reg|ular)expression
+        extract:
+            variable1: [CSS, '#csrf']
+            variable2: [REGEX, '(reg|ular)expression']
