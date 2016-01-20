@@ -1,7 +1,7 @@
 explo
 =====
 
-explo is a simple tool to describe security issues in a human and machine readable format.
+explo is a simple tool to describe web security issues in a human and machine readable format.
 By defining a request/response workflow explo is able to exploit security issues without the
 need of writing a script. This allows chaining of requests.
 
@@ -35,12 +35,12 @@ In this example definition file the security issue is tested by executing two st
 
 1. Clone the repository
 
-    git clone https://github.com/dtag-dev-sec/explo
+        git clone https://github.com/dtag-dev-sec/explo
 
 2. Install explo
 
-    cd explo
-    python setup.py install
+        cd explo
+        python setup.py install
 
 ### Usage
 
