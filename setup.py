@@ -13,7 +13,6 @@ setup(
         'click',
         'requests',
         'pyyaml',
-        'colorama',
         'pyquery',
         'pystache'
     ],

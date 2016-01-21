@@ -36,7 +36,7 @@ parameter:
 
     blocks = explo.core.load_blocks(block_raw)
 
-    _, scope = http.execute(blocks[0], {}, False)
+    _, scope = http.execute(blocks[0], {})
 
     assert scope['test']['response']['content'] == body
     assert scope['test']['extracted']['exploCSS'] == 'explo'
@@ -99,4 +99,4 @@ parameter:
     )
 
     blocks = explo.core.load_blocks(blocks_raw)
-    assert explo.core.proccess_blocks(blocks, debug=True)
+    assert explo.core.proccess_blocks(blocks)

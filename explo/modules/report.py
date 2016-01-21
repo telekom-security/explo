@@ -1,7 +1,10 @@
 """ Core HTTP functionalities """
 import click
+import logging
 
-def execute(block, scope=None, debug=False):
+logger = logging.getLogger(__name__)
+
+def execute(block, scope=None):
     """ Match results """
     required_fields = ['type', 'value']
 
@@ -17,7 +20,7 @@ def execute(block, scope=None, debug=False):
     except Exception:
         raise Exception('the source field "%s" was not found in the current scope' % block['source'])
 
-    click.echo("Matching %s for: '%s'" % (block['source'], opts['value']))
+    logger.debug("Matching %s for: '%s'" % (block['source'], opts['value']))
 
     success = False
 

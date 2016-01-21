@@ -3,7 +3,11 @@ import requests
 import click
 import re
 import pystache
+import logging
+
 from pyquery import PyQuery as pq
+
+logger = logging.getLogger(__name__)
 
 def pretty_print_request(req):
     """ Print a request """
@@ -14,8 +18,8 @@ def pretty_print_request(req):
         req.body,
     )
 
-    click.echo('\n## HTTP request')
-    click.echo(output)
+    logger.debug('### HTTP request ###')
+    logger.debug("\n\n" + output)
 
 def pretty_print_response(res):
     """ Print a response """
@@ -33,10 +37,10 @@ def pretty_print_response(res):
     # Body
     output += res.text
 
-    click.echo('\n## HTTP response')
-    click.echo(output)
+    logger.debug('### HTTP response ###')
+    logger.debug("\n\n" + output)
 
-def execute(block, scope, debug):
+def execute(block, scope):
     """
     Simple HTTP request, also does basic extracting and finding in the response text
     """
@@ -79,8 +83,7 @@ def execute(block, scope, debug):
     sess = requests.Session()
     resp = sess.send(request_prepared, allow_redirects=allow_redirects)
 
-    if debug:
-        click.echo('Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+    logger.debug('Response: %s (%s bytes)', resp.status_code, len(resp.content))
 
     scope[name] = {
         'response': {
@@ -98,15 +101,13 @@ def execute(block, scope, debug):
     if 'find' in opts:
         success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
 
-        if debug:
-            if not success:
-                click.echo("Could not find '%s' in response body" % opts['find'])
-            else:
-                click.echo("Found '%s' in response body" % opts['find'])
+        if not success:
+            logger.debug("Could not find '%s' in response body", opts['find'])
+        else:
+            logger.debug("Found '%s' in response body", opts['find'])
 
-    if debug:
-        pretty_print_request(request_prepared)
-        pretty_print_response(resp)
+    pretty_print_request(request_prepared)
+    pretty_print_response(resp)
 
     return success, scope
 
