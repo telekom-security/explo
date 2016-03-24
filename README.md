@@ -44,8 +44,8 @@ In this example definition file the security issue is tested by executing two st
 
 ### Usage
 
-    explo [--debug] testcase.yaml
-    explo [--debug] examples/*.yaml
+    explo [--verbose] testcase.yaml
+    explo [--verbose] examples/*.yaml
 
 There are a few examples testcases in the `examples/` folder.
 
