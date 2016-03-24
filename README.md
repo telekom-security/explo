@@ -82,3 +82,27 @@ Parameter examples:
         extract:
             variable1: [CSS, '#csrf']
             variable2: [REGEX, '(reg|ular)expression']
+
+#### http_header
+
+The http header module allows to check if a response contains a specified set of headers (and values). All other parameters are identical to the http module.
+
+The following data is made available for other modules:
+
+* the http response body: `stepname.response.content` 
+* the http response cookies: `stepname.response.cookies`
+
+Parameter examples:
+
+    parameter:
+        url: http://example.com
+        method: GET
+        allow_redirects: True
+        headers:
+            User-Agent: explo
+            Content-Type: abc
+        body:
+            key: value
+        headers_required:
+            X-XSS-Protection: 1
+            Server: .               # all values are valid

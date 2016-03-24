@@ -5,12 +5,18 @@ import logging
 
 from importlib import import_module
 
+VERSION = 0.1
+
 class ExploException(Exception):
     """ Base class for exceptions """
     pass
 
 class ParserException(ExploException):
     """ Exception thrown when parsing an explo yaml file failed """
+    pass
+
+class ResultException(ExploException):
+    """ Exception thrown when problems occur regarding the result """
     pass
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -106,5 +112,9 @@ def module_execute(block, scope):
     try:
         mod = import_module('explo.modules.%s' % module)
         return mod.execute(block, scope)
+    except ImportError as exc:
+        raise ExploException('[%s] module %s was not found.' % (module, exc))
+    except ParserException as exc:
+        raise ExploException('[%s] parsing error: %s' % (module, exc))
     except Exception as exc:
-        raise ExploException('[%s] module exception: %s' % (module, exc))
+        raise ExploException('[%s] error: %s - %s' % (module, type(exc).__name__, exc))

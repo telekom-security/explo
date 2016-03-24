@@ -1,17 +1,14 @@
 """
-    explo.modules.http
+    explo.modules.http_header
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Core HTTP request functionalities
+    Check a http response for required headers to be set.
 """
 import requests
-import click
-import re
 import pystache
 import logging
 
-from pyquery import PyQuery as pq
-from explo.core import ParserException, ResultException
+from explo.core import ParserException
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +47,7 @@ def execute(block, scope):
     """
     Simple HTTP request, also does basic extracting and finding in the response text
     """
-    required_fields = ['method', 'url']
+    required_fields = ['method', 'url', 'headers_required']
 
     opts = block['parameter']
     name = block['name']
@@ -61,6 +58,7 @@ def execute(block, scope):
         raise ParserException('not all required parameters were passed')
 
     headers = opts.get('headers', {})
+    headers_required = opts.get('headers_required', {})
     data = opts.get('body', {})
     cookies_path = opts.get('cookies', '')
     allow_redirects = opts.get('allow_redirects', False)
@@ -73,15 +71,19 @@ def execute(block, scope):
             logger.info('warning: could not retrieve cookies from scope or previous step, the step "%s" was not found.', cookies_path)
 
     # Use mustache template on string
-    if isinstance(data, dict):
-        for key, val in data.items():
-            data[key] = pystache.render(val, scope)
-    elif isinstance(data, basestring):
-        data = pystache.render(data, scope)
+    try:
+        if isinstance(data, dict):
+            for key, val in data.items():
+                data[key] = pystache.render(val, scope)
+        elif isinstance(data, basestring):
+            data = pystache.render(data, scope)
+    except Exception as e:
+        raise ParserException('error while parsing explo file: %s' % e)
 
     # Use mustache template on headers
     for key, val in headers.items():
         headers[key] = pystache.render(val, scope)
+
 
     req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
     request_prepared = req.prepare()
@@ -101,52 +103,20 @@ def execute(block, scope):
 
     success = True
 
-    if 'extract' in opts:
-        scope[name]['extracted'] = extract(resp.text, opts['extract'])
+    if not isinstance(headers_required, dict):
+        raise ParserException('headers_required must be a list of headers')
 
-    if 'find' in opts:
-        success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
-
-        if not success:
-            logger.debug("Could not find '%s' in response body", opts['find'])
+    for header in headers_required:
+        if not header in resp.headers:
+            success = False
+            logger.info("Could not find '%s' header", header)
         else:
-            logger.debug("Found '%s' in response body", opts['find'])
+            if headers_required[header] != '.':
+                if str(headers_required[header]) != resp.headers[header]:
+                    success = False
+                    logger.info("Header '%s: %s' different from response header '%s: %s'", header, headers_required[header], header, resp.headers[header])
 
     pretty_print_request(request_prepared)
     pretty_print_response(resp)
 
     return success, scope
-
-def extract(data, extract_fields):
-    """ Extract selectors from a html document """
-
-    result = {}
-
-    for name, opts in extract_fields.items():
-        if len(opts) != 2:
-            raise ParserException('extract error: mailformed extract entry.')
-
-        method, pattern = opts
-
-        if method == 'CSS':
-            doc = pq(data)
-
-            res = doc(pattern)
-            found = None
-
-            if len(res) > 1:
-                raise ResultException('extract error: found more than 1 result for "%s"' % pattern)
-
-            if res.attr('value'):
-                found = res.attr('value')
-            elif res.text():
-                found = res.text()
-
-            result[name] = found
-
-        if method == 'REGEX':
-            regex_res = re.search(pattern, data, re.MULTILINE)
-            if regex_res:
-                result[name] = regex_res.group('extract')
-
-    return result

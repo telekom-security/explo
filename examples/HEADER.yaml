@@ -1,0 +1,10 @@
+name: exploit
+description: This request checks if the header Host is set
+module: http_header
+parameter:
+    url: https://www.google.de
+    method: GET
+    headers:
+        User-Agent: Mozilla/5.0
+    headers_required:
+        Server: .   #allow any value here
