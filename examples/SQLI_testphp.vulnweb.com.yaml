@@ -1,4 +1,3 @@
----
 name: exploit
 description: This request sends a GET request to check for an sql injection
 module: http
