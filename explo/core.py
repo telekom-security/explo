@@ -6,6 +6,7 @@ import logging
 from importlib import import_module
 
 VERSION = 0.1
+FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
 
 class ExploException(Exception):
     """ Base class for exceptions """
@@ -35,21 +36,20 @@ def main(ctx, files, verbose):
     if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    logger.debug('Verbose mode')
+    logger.debug('Verbose logging activated.')
 
     for filename in files:
         try:
-            result = from_file(filename)
-
-            if result:
+            if from_file(filename):
                 logger.info('Success (%s)', filename)
             else:
                 logger.info('Failed (%s)', filename)
+
         except ExploException as exc:
             logger.error('error processing %s: %s', filename, exc)
 
 def from_file(filename):
-    """ Read file and pass to explo_content """
+    """ Read file and pass to from_content """
 
     try:
         fhandle = open(filename, 'r')
@@ -67,7 +67,8 @@ def from_content(content):
     except yaml.YAMLError as err:
         raise ExploException('error parsing document: %s' % err)
 
-    validate_blocks(blocks)
+    if not validate_blocks(blocks):
+        raise ExploException('error parsing document: not all blocks specify the required fields %s' % FIELDS_REQUIRED)
     return proccess_blocks(blocks)
 
 def load_blocks(content):
@@ -77,14 +78,12 @@ def load_blocks(content):
 def validate_blocks(blocks):
     """ Ensures minimal fields for blocks """
 
-    count = 0
-
     for block in blocks:
-        count += 1
-        required_fields = ['name', 'description', 'module', 'parameter']
 
-        if not all(k in block for k in required_fields):
-            raise ParserException('not all required field in block %d' % count)
+        if not all(k in block for k in FIELDS_REQUIRED):
+            return False
+
+    return True
 
 def proccess_blocks(blocks):
     """ Processes all blocks """
@@ -95,7 +94,7 @@ def proccess_blocks(blocks):
     for block in blocks:
         name = block['name']
 
-        logger.debug("'===> Block '%s'", name)
+        logger.debug("'===> Processing block '%s'", name)
 
         last_result, scope = module_execute(block, scope)
 

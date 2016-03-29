@@ -8,8 +8,7 @@ def test_validate_invalid():
     module: modname
     """
 
-    with pytest.raises(Exception):
-        explo.core.validate_blocks([invalid])
+    assert explo.core.validate_blocks([invalid]) == False
 
 def test_validate_valid():
     """ Test a valid block """
@@ -21,4 +20,4 @@ def test_validate_valid():
     parameter:
     """
 
-    explo.core.validate_blocks([valid])
+    assert explo.core.validate_blocks([valid])
