@@ -12,9 +12,11 @@ setup(
     install_requires=[
         'click',
         'requests',
+        'requests_toolbelt',
         'pyyaml',
         'pyquery',
-        'pystache'
+        'pystache',
+        'six'
     ],
 
     entry_points={

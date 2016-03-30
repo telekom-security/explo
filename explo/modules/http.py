@@ -5,46 +5,17 @@
     Core HTTP request functionalities
 """
 import requests
-import click
 import re
 import pystache
+import six
 import logging
+import pprint
 
 from pyquery import PyQuery as pq
+from requests_toolbelt.utils import dump
 from explo.core import ParserException, ResultException
 
 logger = logging.getLogger(__name__)
-
-def pretty_print_request(req):
-    """ Print a request """
-
-    output = '{} HTTP/1.1\n{}\n\n{}'.format(
-        req.method + ' ' + req.url,
-        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-        req.body,
-    )
-
-    logger.debug('### HTTP request ###')
-    logger.debug("\n\n" + output)
-
-def pretty_print_response(res):
-    """ Print a response """
-
-
-    # Status line
-    output = 'HTTP/1.1 %s %s\n' % (res.status_code, res.reason)
-
-    # Headers
-    for name, value in res.headers.items():
-        output += '%s: %s\n' % (name, value)
-
-    output += '\n'
-
-    # Body
-    output += res.text
-
-    logger.debug('### HTTP response ###')
-    logger.debug("\n\n" + output)
 
 def execute(block, scope):
     """
@@ -76,7 +47,7 @@ def execute(block, scope):
     if isinstance(data, dict):
         for key, val in data.items():
             data[key] = pystache.render(val, scope)
-    elif isinstance(data, basestring):
+    elif isinstance(data, six.string_types):
         data = pystache.render(data, scope)
 
     # Use mustache template on headers
@@ -112,8 +83,8 @@ def execute(block, scope):
         else:
             logger.debug("Found '%s' in response body", opts['find'])
 
-    pretty_print_request(request_prepared)
-    pretty_print_response(resp)
+    verbose_output = dump.dump_all(resp)
+    logger.debug('\n' + verbose_output.decode('utf-8'))
 
     return success, scope
 
