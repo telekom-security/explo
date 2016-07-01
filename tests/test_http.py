@@ -99,4 +99,4 @@ parameter:
     )
 
     blocks = explo.core.load_blocks(blocks_raw)
-    assert explo.core.proccess_blocks(blocks)
+    assert explo.core.process_blocks(blocks)

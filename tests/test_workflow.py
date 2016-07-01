@@ -84,7 +84,7 @@ def test_workflow_simple():
 
     blocks = explo.core.load_blocks(BLOCKS_RAW)
 
-    assert explo.core.proccess_blocks(blocks)
+    assert explo.core.process_blocks(blocks)
 
 @responses.activate
 def test_workflow_csrf_token():
@@ -111,4 +111,4 @@ def test_workflow_csrf_token():
 
     blocks = explo.core.load_blocks(BLOCKS_CSRF)
 
-    assert explo.core.proccess_blocks(blocks)
+    assert explo.core.process_blocks(blocks)

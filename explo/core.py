@@ -1,27 +1,15 @@
 """ Main handler """
+import sys
 import click
 import yaml
-import logging
 
-from importlib import import_module
+from eliot import Message, to_file, add_destination
+
+from explo.modules import http as module_http, http_header as module_header
+from explo.exceptions import ExploException, ParserException
 
 VERSION = 0.1
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
-
-class ExploException(Exception):
-    """ Base class for exceptions """
-    pass
-
-class ParserException(ExploException):
-    """ Exception thrown when parsing an explo yaml file failed """
-    pass
-
-class ResultException(ExploException):
-    """ Exception thrown when problems occur regarding the result """
-    pass
-
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-logger = logging.getLogger(__name__)
 
 @click.command()
 @click.argument('files', nargs=-1)
@@ -34,21 +22,19 @@ def main(ctx, files, verbose):
         click.echo(main.get_help(ctx))
 
     if verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-
-    logger.debug('Verbose logging activated.')
+        add_destination(log_stdout)
 
     for filename in files:
         try:
             if from_file(filename):
-                logger.info('Success (%s)', filename)
+                print('Success (%s)' % filename)
             else:
-                logger.info('Failed (%s)', filename)
+                print('Failed (%s)', filename)
 
         except ExploException as exc:
-            logger.error('error processing %s: %s', filename, exc)
+            print('error processing %s: %s', filename, exc)
 
-def from_file(filename):
+def from_file(filename, log_file=None):
     """ Read file and pass to from_content """
 
     try:
@@ -57,9 +43,9 @@ def from_file(filename):
     except IOError as err:
         raise ExploException('could not open file %s: %s' % (filename, err))
 
-    return from_content(content)
+    return from_content(content, log_file)
 
-def from_content(content):
+def from_content(content, log_file=None):
     """ Load, validate and process blocks """
 
     try:
@@ -69,7 +55,11 @@ def from_content(content):
 
     if not validate_blocks(blocks):
         raise ExploException('error parsing document: not all blocks specify the required fields %s' % FIELDS_REQUIRED)
-    return proccess_blocks(blocks)
+
+    if log_file:
+        to_file(log_file)
+
+    return process_blocks(blocks)
 
 def load_blocks(content):
     """ Load documents/blocks from a YAML file """
@@ -85,7 +75,7 @@ def validate_blocks(blocks):
 
     return True
 
-def proccess_blocks(blocks):
+def process_blocks(blocks):
     """ Processes all blocks """
 
     scope = {}
@@ -94,7 +84,7 @@ def proccess_blocks(blocks):
     for block in blocks:
         name = block['name']
 
-        logger.debug("'===> Processing block '%s'", name)
+        Message.log(level='status', message='Processing block %s' % name)
 
         last_result, scope = module_execute(block, scope)
 
@@ -107,13 +97,22 @@ def module_execute(block, scope):
     """ Use corresponding module to process block """
     module = block['module']
 
-    # dynamically load modules
+    modules = {
+        "http": module_http,
+        "header": module_header
+    }
+
+    if not module in modules:
+        raise ExploException('This module is not allowed')
+
     try:
-        mod = import_module('explo.modules.%s' % module)
-        return mod.execute(block, scope)
-    except ImportError as exc:
-        raise ExploException('[%s] module %s was not found.' % (module, exc))
+        return modules.get(module).execute(block, scope)
     except ParserException as exc:
         raise ExploException('[%s] parsing error: %s' % (module, exc))
     except Exception as exc:
-        raise ExploException('[%s] error: %s - %s' % (module, type(exc).__name__, exc))
+        print(exc)
+        raise ExploException(exc)
+
+def log_stdout(message):
+    if 'message' in message:
+        print("DEBUG: ", message['message'])

@@ -4,18 +4,15 @@
 
     Core HTTP request functionalities
 """
-import requests
 import re
+import requests
 import pystache
 import six
-import logging
-import pprint
 
 from pyquery import PyQuery as pq
-from requests_toolbelt.utils import dump
-from explo.core import ParserException, ResultException
+from eliot import Message
 
-logger = logging.getLogger(__name__)
+from explo.exceptions import ExploException, ParserException
 
 def execute(block, scope):
     """
@@ -41,7 +38,7 @@ def execute(block, scope):
             cookie_module = cookies_path.split('.', 1)[0]
             cookies = scope[cookie_module]['response']['cookies']
         except KeyError:
-            logger.info('warning: could not retrieve cookies from scope or previous step, the step "%s" was not found.', cookies_path)
+            Message.log(level='warning', message='could not retrieve cookies from scope or previous step, the step "%s" was not found.' % cookies_path)
 
     # Use mustache template on string
     if isinstance(data, dict):
@@ -60,7 +57,7 @@ def execute(block, scope):
     sess = requests.Session()
     resp = sess.send(request_prepared, allow_redirects=allow_redirects)
 
-    logger.debug('Response: %s (%s bytes)', resp.status_code, len(resp.content))
+    Message.log(level='status', message='Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
     scope[name] = {
         'response': {
@@ -79,12 +76,12 @@ def execute(block, scope):
         success = (re.search(opts['find'], resp.text, flags=re.MULTILINE) != None)
 
         if not success:
-            logger.debug("Could not find '%s' in response body", opts['find'])
+            Message.log(level='status', message="Could not find '%s' in response body" % opts['find'])
         else:
-            logger.debug("Found '%s' in response body", opts['find'])
+            Message.log(level='status', message="Found '%s' in response body" % opts['find'])
 
-    verbose_output = dump.dump_all(resp)
-    logger.debug('\n' + verbose_output.decode('utf-8'))
+    pretty_print_request(request_prepared)
+    pretty_print_response(resp)
 
     return success, scope
 
@@ -106,7 +103,7 @@ def extract(data, extract_fields):
             found = None
 
             if len(res) > 1:
-                raise ResultException('extract error: found more than 1 result for "%s"' % pattern)
+                raise ExploException('extract error: found more than 1 result for "%s"' % pattern)
 
             if res.attr('value'):
                 found = res.attr('value')
@@ -121,3 +118,32 @@ def extract(data, extract_fields):
                 result[name] = regex_res.group('extract')
 
     return result
+
+def pretty_print_request(req):
+    """ Print a request """
+
+    output = '{} HTTP/1.1\n{}\n\n{}'.format(
+        req.method + ' ' + req.url,
+        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+        req.body,
+    )
+
+    Message.log(level='request', message=output)
+
+def pretty_print_response(res):
+    """ Print a response """
+
+
+    # Status line
+    output = 'HTTP/1.1 %s %s\n' % (res.status_code, res.reason)
+
+    # Headers
+    for name, value in res.headers.items():
+        output += '%s: %s\n' % (name, value)
+
+    output += '\n'
+
+    # Body
+    output += res.text
+
+    Message.log(level='response', message=output) 

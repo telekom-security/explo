@@ -12,10 +12,10 @@ setup(
     install_requires=[
         'click',
         'requests',
-        'requests_toolbelt',
         'pyyaml',
         'pyquery',
         'pystache',
+        'eliot',
         'six'
     ],
 
