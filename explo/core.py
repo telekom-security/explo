@@ -32,9 +32,9 @@ def main(ctx, files, verbose):
                 print('Failed (%s)', filename)
 
         except ExploException as exc:
-            print('error processing %s: %s', filename, exc)
+            print('error processing %s: %s' % (filename, exc))
 
-def from_file(filename, log_file=None):
+def from_file(filename, log=None):
     """ Read file and pass to from_content """
 
     try:
@@ -43,9 +43,9 @@ def from_file(filename, log_file=None):
     except IOError as err:
         raise ExploException('could not open file %s: %s' % (filename, err))
 
-    return from_content(content, log_file)
+    return from_content(content, log)
 
-def from_content(content, log_file=None):
+def from_content(content, log=None):
     """ Load, validate and process blocks """
 
     try:
@@ -56,8 +56,8 @@ def from_content(content, log_file=None):
     if not validate_blocks(blocks):
         raise ExploException('error parsing document: not all blocks specify the required fields %s' % FIELDS_REQUIRED)
 
-    if log_file:
-        to_file(log_file)
+    if log:
+        add_destination(log)
 
     return process_blocks(blocks)
 

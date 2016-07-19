@@ -1,0 +1,10 @@
+name: exploit
+description: This request sends a POST payload to exploit a XSS vulnerability
+module: http
+parameter:
+    url: https://www.robinverton.de
+    method: GET
+    headers:
+        User-Agent: Mozilla/5.0
+        Content-Type: application/x-www-form-urlencoded
+    find: <div id=explo>explo</div>
