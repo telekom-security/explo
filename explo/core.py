@@ -1,9 +1,8 @@
 """ Main handler """
-import sys
 import click
 import yaml
 
-from eliot import Message, to_file, add_destination
+from eliot import Message, add_destination
 
 from explo.modules import http as module_http, http_header as module_header
 from explo.exceptions import ExploException, ParserException
@@ -29,7 +28,7 @@ def main(ctx, files, verbose):
             if from_file(filename):
                 print('Success (%s)' % filename)
             else:
-                print('Failed (%s)', filename)
+                print('Failed (%s)' % filename)
 
         except ExploException as exc:
             print('error processing %s: %s' % (filename, exc))
@@ -47,6 +46,9 @@ def from_file(filename, log=None):
 
 def from_content(content, log=None):
     """ Load, validate and process blocks """
+
+    if not content:
+        raise ExploException('no exploitation content')
 
     try:
         blocks = load_blocks(content)

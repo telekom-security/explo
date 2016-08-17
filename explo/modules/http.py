@@ -13,6 +13,7 @@ from pyquery import PyQuery as pq
 from eliot import Message
 
 from explo.exceptions import ExploException, ParserException
+from explo.connection import proxies
 
 def execute(block, scope):
     """
@@ -55,7 +56,7 @@ def execute(block, scope):
     request_prepared = req.prepare()
 
     sess = requests.Session()
-    resp = sess.send(request_prepared, allow_redirects=allow_redirects)
+    resp = sess.send(request_prepared, allow_redirects=allow_redirects, proxies=proxies, verify=False)
 
     Message.log(level='status', message='Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 

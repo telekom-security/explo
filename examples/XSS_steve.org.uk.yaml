@@ -2,7 +2,7 @@ name: exploit
 description: This request sends a POST payload to exploit a XSS vulnerability
 module: http
 parameter:
-    url: https://www.steve.org.uk/Security/XSS/Tutorial/simple.cgi
+    url: https://steve.fi/Security/XSS/Tutorial/simple.cgi
     method: POST
     headers:
         User-Agent: Mozilla/5.0
