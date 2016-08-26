@@ -5,7 +5,7 @@ import yaml
 from eliot import Message, add_destination
 
 from explo.modules import http as module_http, http_header as module_header
-from explo.exceptions import ExploException, ParserException
+from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 
 VERSION = 0.1
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
@@ -30,8 +30,12 @@ def main(ctx, files, verbose):
             else:
                 print('Failed (%s)' % filename)
 
+        except ParserException as exc:
+            print('ERROR parsing file %s: %s' % (filename, exc))
+        except (ConnectionException, ProxyException) as exc:
+            print('ERROR connecting to host in file %s: %s' % (filename, exc))
         except ExploException as exc:
-            print('error processing %s: %s' % (filename, exc))
+            print('ERROR in file %s: %s' % (filename, exc))
 
 def from_file(filename, log=None):
     """ Read file and pass to from_content """
@@ -107,13 +111,7 @@ def module_execute(block, scope):
     if not module in modules:
         raise ExploException('This module is not allowed')
 
-    try:
-        return modules.get(module).execute(block, scope)
-    except ParserException as exc:
-        raise ExploException('[%s] parsing error: %s' % (module, exc))
-    except Exception as exc:
-        print(exc)
-        raise ExploException(exc)
+    return modules.get(module).execute(block, scope)
 
 def log_stdout(message):
     if 'message' in message:

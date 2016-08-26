@@ -12,7 +12,9 @@ import six
 from pyquery import PyQuery as pq
 from eliot import Message
 
-from explo.exceptions import ExploException, ParserException
+from requests.exceptions import ProxyError
+
+from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 from explo.connection import proxies
 
 def execute(block, scope):
@@ -52,11 +54,16 @@ def execute(block, scope):
     for key, val in headers.items():
         headers[key] = pystache.render(val, scope)
 
-    req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
-    request_prepared = req.prepare()
+    try:
+        req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
+        request_prepared = req.prepare()
 
-    sess = requests.Session()
-    resp = sess.send(request_prepared, allow_redirects=allow_redirects, proxies=proxies, verify=False)
+        sess = requests.Session()
+        resp = sess.send(request_prepared, allow_redirects=allow_redirects, proxies=proxies, verify=False)
+    except ProxyError as exc:
+        raise ProxyException(exc)
+    except Exception as exc:
+        raise ConnectionException(exc)
 
     Message.log(level='status', message='Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
