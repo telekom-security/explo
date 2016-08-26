@@ -106,3 +106,22 @@ Parameter examples:
         headers_required:
             X-XSS-Protection: 1
             Server: .               # all values are valid
+
+#### sqli_blind
+
+The sqli\_blind module is able to identify blind sql injections by a) timing them or b) checking a true/false case
+
+The following data is made available for other modules:
+
+* the http response body: `stepname.response.content` 
+* the http response cookies: `stepname.response.cookies`
+
+Parameter examples:
+
+    parameter:
+        url: http://example.com/vulnerable.php?id=1' waitfor delay '00:00:5'--
+        method: GET
+        type: timed
+        delay_seconds: 5
+
+If the threshold of 5 seconds (delay_seconds) is exceeded, the check returns true (open).
