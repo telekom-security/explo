@@ -19,7 +19,6 @@ module: sqli_blind
 parameter:
     url: http://test.com/
     method: GET
-    type: timed
     delay_seconds: 0.5
 """
 
@@ -53,7 +52,6 @@ module: sqli_blind
 parameter:
     url: http://test.com/
     method: GET
-    type: timed
     delay_seconds: 1
 """
 

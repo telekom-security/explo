@@ -2,7 +2,7 @@
     explo.modules.sqli_blind
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Check for Blind SQL-Injections
+    Check for time based blind SQL-Injections
 """
 from eliot import Message
 
@@ -17,10 +17,7 @@ def execute(block, scope):
     name = block['name']
     opts = block['parameter']
 
-    required_fields(opts, ['type'])
-
-    if opts['type'] == 'timed':
-        required_fields(opts, ['delay_seconds'])
+    required_fields(opts, ['delay_seconds'])
 
     delay_seconds = float(opts['delay_seconds'])
 

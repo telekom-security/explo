@@ -109,7 +109,7 @@ Parameter examples:
 
 #### sqli_blind
 
-The sqli\_blind module is able to identify blind sql injections by a) timing them or b) checking a true/false case
+The sqli\_blind module is able to identify time based blind sql injections.
 
 The following data is made available for other modules:
 
@@ -121,7 +121,6 @@ Parameter examples:
     parameter:
         url: http://example.com/vulnerable.php?id=1' waitfor delay '00:00:5'--
         method: GET
-        type: timed
         delay_seconds: 5
 
 If the threshold of 5 seconds (delay_seconds) is exceeded, the check returns true (open).
