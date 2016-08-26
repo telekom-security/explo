@@ -4,7 +4,7 @@ import yaml
 
 from eliot import Message, add_destination
 
-from explo.modules import http as module_http, http_header as module_header
+from explo.modules import http as module_http, http_header as module_header, sqli_blind as module_sqli
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 
 VERSION = 0.1
@@ -104,8 +104,9 @@ def module_execute(block, scope):
     module = block['module']
 
     modules = {
-        "http": module_http,
-        "header": module_header
+        'http': module_http,
+        'header': module_header,
+        'sqli_blind': module_sqli
     }
 
     if not module in modules:
