@@ -6,11 +6,10 @@
 """
 import re
 
-from pyquery import PyQuery as pq
 from eliot import Message
 
-from explo.exceptions import ExploException, ParserException
 from explo.connection import http_request
+from explo.util import extract
 
 def execute(block, scope):
     """
@@ -21,10 +20,6 @@ def execute(block, scope):
     opts = block['parameter']
 
     _, response = http_request(block, scope)
-
-    Message.log(
-        level='status',
-        message='Response: %s (%s bytes)' % (response.status_code, len(response.content)))
 
     scope[name] = {
         'response': {
@@ -51,36 +46,3 @@ def execute(block, scope):
 
     return success, scope
 
-def extract(data, extract_fields):
-    """ Extract selectors from a html document """
-
-    result = {}
-
-    for name, opts in extract_fields.items():
-        if len(opts) != 2:
-            raise ParserException('extract error: mailformed extract entry.')
-
-        method, pattern = opts
-
-        if method == 'CSS':
-            doc = pq(data)
-
-            res = doc(pattern)
-            found = None
-
-            if len(res) > 1:
-                raise ExploException('extract error: found more than 1 result for "%s"' % pattern)
-
-            if res.attr('value'):
-                found = res.attr('value')
-            elif res.text():
-                found = res.text()
-
-            result[name] = found
-
-        if method == 'REGEX':
-            regex_res = re.search(pattern, data, re.MULTILINE)
-            if regex_res:
-                result[name] = regex_res.group('extract')
-
-    return result
