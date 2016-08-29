@@ -4,7 +4,11 @@ import yaml
 
 from eliot import Message, add_destination
 
-from explo.modules import http as module_http, http_header as module_header, sqli_blind as module_sqli
+from explo.modules import (
+    http as module_http,
+    http_header as module_header,
+    sqli_blind as module_sqli
+)
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 
 VERSION = 0.1
@@ -41,8 +45,8 @@ def from_file(filename, log=None):
     """ Read file and pass to from_content """
 
     try:
-        fhandle = open(filename, 'r')
-        content = fhandle.read()
+        with open(filename, 'r') as fhandle:
+            content = fhandle.read()
     except IOError as err:
         raise ExploException('could not open file %s: %s' % (filename, err))
 
@@ -60,7 +64,8 @@ def from_content(content, log=None):
         raise ExploException('error parsing document: %s' % err)
 
     if not validate_blocks(blocks):
-        raise ExploException('error parsing document: not all blocks specify the required fields %s' % FIELDS_REQUIRED)
+        raise ExploException('error parsing document:' \
+            'not all blocks specify the required fields %s' % FIELDS_REQUIRED)
 
     if log:
         add_destination(log)
