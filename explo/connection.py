@@ -4,6 +4,9 @@ import six
 
 import requests
 from requests.exceptions import ProxyError
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from eliot import Message
 
@@ -55,6 +58,9 @@ def http_request(block, scope):
 
     req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
     request = req.prepare()
+
+    if proxies.get('http', '') != '':
+        Message.log(level='status', message='Using proxies {}'.format(proxies))
 
     try:
         sess = requests.Session()
