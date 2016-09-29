@@ -9,7 +9,7 @@ import re
 from eliot import Message
 
 from explo.connection import http_request
-from explo.util import extract
+from explo.util import extract, Color
 
 def execute(block, scope):
     """
@@ -40,9 +40,12 @@ def execute(block, scope):
         if not success:
             Message.log(
                 level='status',
-                message="Could not find '%s' in response body" % opts['find'])
+                message="==> Not found in BODY: '%s'" % Color.cyan(opts['find']))
         else:
-            Message.log(level='status', message="Found '%s' in response body" % opts['find'])
+            Message.log(
+                level='status',
+                message="==> Found in BODY: '%s'" % Color.cyan(opts['find'])
+            )
 
     return success, scope
 

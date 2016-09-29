@@ -1,4 +1,5 @@
 import re
+import sys
 from pyquery import PyQuery as pq
 
 from explo.exceptions import ParserException, ExploException
@@ -47,3 +48,31 @@ def extract(data, extract_fields):
                 result[name] = regex_res.group('extract')
 
     return result
+
+# Color code is copied from https://github.com/reorx/python-terminal-color/blob/master/color_simple.py
+ISATTY = sys.stdout.isatty()
+
+def make_color(code):
+    def color_func(s):
+        if not ISATTY:
+            return s
+        tpl = '\x1b[{}m{}\x1b[0m'
+        return tpl.format(code, s)
+    return color_func
+
+class Color:
+    red = make_color(31)
+    green = make_color(32)
+    yellow = make_color(33)
+    blue = make_color(34)
+    magenta = make_color(35)
+    cyan = make_color(36)
+
+    bold = make_color(1)
+    underline = make_color(4)
+
+    grayscale = {(i - 232): make_color('38;5;' + str(i)) for i in range(232, 256)}
+
+def eprint(*args, **kwargs):
+    """ Print to stderr """
+    print(*args, file=sys.stderr, **kwargs)

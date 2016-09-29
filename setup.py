@@ -10,7 +10,6 @@ setup(
     packages=['explo', 'explo.modules'],
 
     install_requires=[
-        'click',
         'requests',
         'pyyaml',
         'pyquery',
