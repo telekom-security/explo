@@ -55,7 +55,7 @@ def http_request(block, scope):
 
     # Use mustache template on headers
     for key, val in headers.items():
-        headers[key] = pystache.render(val, scope)
+        headers[key] = pystache.render(str(val), scope)
 
     req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
     request = req.prepare()
