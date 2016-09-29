@@ -1,0 +1,22 @@
+name: login
+description: login with test credentials
+module: http
+parameter:
+    url: http://testphp.vulnweb.com/userinfo.php
+    method: POST
+    body:
+        uname: test
+        pass: test
+---
+name: exploit
+description: trigger sqli error with the logged in user 
+module: http
+parameter:
+    url: http://testphp.vulnweb.com/userinfo.php
+    method: POST
+    body:
+        urname: "'SQLI"
+        ucc: 123-456
+        update: update
+    cookies: login.response.cookies
+    find: You have an error in your SQL syntax
