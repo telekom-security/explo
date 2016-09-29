@@ -73,7 +73,7 @@ def http_request(block, scope):
 
     Message.log(
         level='status',
-        message='Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
+        message='HTTP Response: %s (%s bytes)' % (resp.status_code, len(resp.content)))
 
     pretty_print_request(request)
     pretty_print_response(resp)
@@ -83,8 +83,7 @@ def http_request(block, scope):
 def pretty_print_request(req):
     """ Print a request """
 
-    output = '\n\n'
-    output += '{} {} {}\n'.format(Color.yellow(req.method), Color.cyan(req.url), Color.grayscale[14]('HTTP/1.1'))
+    output = '{} {} {}\n'.format(Color.yellow(req.method), Color.cyan(req.url), Color.grayscale[14]('HTTP/1.1'))
     output += '\n'.join('{}: {}'.format(Color.grayscale[14](k), Color.cyan(v)) for k, v in req.headers.items())
     output += '\n\n{}'.format(req.body)
 
@@ -94,8 +93,7 @@ def pretty_print_response(res):
     """ Print a response """
 
     # Status line
-    output = '\n\n'
-    output += Color.yellow('HTTP') + Color.grayscale[14]('/1.1 %s %s\n' % (res.status_code, res.reason))
+    output = Color.yellow('HTTP') + Color.grayscale[14]('/1.1 %s %s\n' % (res.status_code, res.reason))
 
     # Headers
     for name, value in res.headers.items():

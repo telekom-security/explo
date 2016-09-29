@@ -9,7 +9,7 @@ from explo.modules import (
     sqli_blind as module_sqli
 )
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
-from explo.util import Color, eprint
+from explo.util import Color
 
 VERSION = 0.1
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
@@ -98,8 +98,9 @@ def process_blocks(blocks):
 
     for block in blocks:
         name = block['name']
+        desc = block['description']
 
-        Message.log(level='status', message='Processing block %s' % name)
+        Message.log(level='status', message='Block {}: {}'.format(name, desc))
 
         last_result, scope = module_execute(block, scope)
 
@@ -127,7 +128,9 @@ def log_stdout(message):
     if 'message' in message:
 
         level = message.get('level', '')
-        if (level == 'request' or level == 'response') and not args.verbose:
-            return
+        if level == 'request' or level == 'response':
+            if not args.verbose:
+                return
+            print('\n')
 
         print(message['message'])

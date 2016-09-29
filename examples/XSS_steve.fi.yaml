@@ -1,5 +1,5 @@
 name: exploit
-description: This request sends a POST payload to exploit a XSS vulnerability
+description: Exploit the 'text' parameter on simple.cgi to output unescaped html.
 module: http
 parameter:
     url: https://steve.fi/Security/XSS/Tutorial/simple.cgi
