@@ -1,14 +1,16 @@
 explo
 =====
 
-explo is a simple tool to describe web security issues in a human and machine readable format.
+![screenshot](screenshot.png)
+
+`explo` is a simple tool to describe web security issues in a human and machine readable format.
 By defining a request/response workflow explo is able to exploit security issues without the
 need of writing a script. This allows chaining of requests.
 
 ### Example (POST form with CSRF field)
 
     name: get_csrf
-	description: request to extracts CSRF token
+	description: extract csrf token from contact page
     module: http
     parameter:
         url: http://example.com/contact
@@ -19,7 +21,7 @@ need of writing a script. This allows chaining of requests.
             csrf: [CSS, "#csrf"]
 	---
 	name: exploit
-    description: exploit vulnerability with valid csrf token
+    description: exploit sql injection vulnerability with valid csrf token
     module: http
     parameter:
         url: http://example.com/contact
