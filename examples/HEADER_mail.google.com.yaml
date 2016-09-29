@@ -1,0 +1,10 @@
+name: exploit
+description: check if X-Frame-Options header is set correctly
+module: header
+parameter:
+    url: https://mail.google.com
+    method: GET
+    headers:
+        User-Agent: Mozilla/5.0
+    headers_required:
+        X-Frame-Options: .
