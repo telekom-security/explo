@@ -20,11 +20,13 @@ parser.add_argument('filename', nargs='+',
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Activate verbose output')
 
-args = parser.parse_args()
+args = None
 
 def main():
     """ Get file list from args and execute """
+    global args
 
+    args = parser.parse_args()
     add_destination(log_stdout)
 
     for filename in args.filename:
