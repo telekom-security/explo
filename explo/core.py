@@ -131,8 +131,9 @@ def log_stdout(message):
 
         level = message.get('level', '')
         if level == 'request' or level == 'response':
-            if not args.verbose:
+            if args and not args.verbose:
                 return
+
             print('\n')
 
         print(message['message'])

@@ -1,5 +1,5 @@
 name: exploit
-description: check if X-Frame-Options header is set correctly
+description: check if X-Frame-Options header is missing (=success)
 module: header
 parameter:
     url: https://mail.google.com

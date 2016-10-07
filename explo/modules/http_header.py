@@ -38,13 +38,13 @@ def execute(block, scope):
         raise ParserException('headers_required must be a list of headers')
 
     for header in headers_required:
-        if not header in response.headers:
+        if header in response.headers:
             success = False
-            Message.log(level='status', message="Could not find '%s' header" % header)
+            Message.log(level='status', message="Could find '%s' header" % header)
         else:
             if headers_required[header] != '.':
                 if str(headers_required[header]) != response.headers[header]:
-                    success = False
+                    success = True
                     Message.log(
                         level='status',
                         message="Header '%s: %s' different from response header '%s: %s'" % (header, headers_required[header], header, response.headers[header]))
