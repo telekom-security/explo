@@ -30,7 +30,7 @@ def execute(block, scope):
         }
     }
 
-    success = True
+    success = False
 
     headers_required = opts['headers_required']
 
@@ -39,14 +39,14 @@ def execute(block, scope):
 
     for header in headers_required:
         if header in response.headers:
-            success = False
-            Message.log(level='status', message="Could find '%s' header" % header)
-        else:
-            if headers_required[header] != '.':
-                if str(headers_required[header]) != response.headers[header]:
-                    success = True
-                    Message.log(
-                        level='status',
-                        message="Header '%s: %s' different from response header '%s: %s'" % (header, headers_required[header], header, response.headers[header]))
+            if headers_required[header] == '.':
+                continue
 
+            if str(headers_required[header]) != response.headers[header]:
+                Message.log(
+                    level='status',
+                    message="Header '%s: %s' different from response header '%s: %s'" % (header, headers_required[header], header, response.headers[header]))
+                success = True
+        else:
+            success = True
     return success, scope

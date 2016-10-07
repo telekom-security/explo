@@ -32,7 +32,7 @@ parameter:
 
     print(ret, scope)
 
-    assert ret
+    assert ret == False
     assert scope['test']['response']['content'] == 'success'
 
 @responses.activate
@@ -57,5 +57,5 @@ parameter:
     blocks = explo.core.load_blocks(block_raw)
     ret, scope = http.execute(blocks[0], {})
 
-    assert ret == False
+    assert ret
     assert scope['test']['response']['content'] == 'success'
