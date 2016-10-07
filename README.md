@@ -80,14 +80,15 @@ Parameter examples:
             Content-Type: abc
         body:
             key: value
-        find: (reg|ular)expression
+        find: search for string
+        find_regex: search for (reg|ular)expression
         extract:
             variable1: [CSS, '#csrf']
             variable2: [REGEX, '(reg|ular)expression']
 
 #### http_header
 
-The http header module allows to check if a response contains a specified set of headers (and values). All other parameters are identical to the http module.
+The http header module allows to check if a response misses a specified set of headers (and values). All other parameters are identical to the http module.
 
 The following data is made available for other modules:
 

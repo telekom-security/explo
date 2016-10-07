@@ -35,17 +35,29 @@ def execute(block, scope):
         scope[name]['extracted'] = extract(response.text, opts['extract'])
 
     if 'find' in opts:
-        success = (re.search(opts['find'], response.text, flags=re.MULTILINE) != None)
+        keyword = opts['find']
+        success = (keyword in response.text)
 
         if not success:
             Message.log(
                 level='status',
-                message="==> Not found in BODY: '%s'" % Color.cyan(opts['find']))
+                message="==> Not found in BODY: '%s'" % Color.cyan(keyword))
         else:
             Message.log(
                 level='status',
-                message="==> Found in BODY: '%s'" % Color.cyan(opts['find'])
-            )
+                message="==> Found in BODY: '%s'" % Color.cyan(keyword))
+
+    if 'find_regex' in opts:
+        pattern = opts['find_regex']
+        success = (re.search(pattern, response.text, flags=re.MULTILINE) != None)
+
+        if not success:
+            Message.log(
+                level='status',
+                message="==> Not found in BODY: '%s'" % Color.cyan(pattern))
+        else:
+            Message.log(
+                level='status',
+                message="==> Found in BODY: '%s'" % Color.cyan(pattern))
 
     return success, scope
-
