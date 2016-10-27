@@ -9,7 +9,7 @@ from explo.modules import (
     sqli_blind as module_sqli
 )
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
-from explo.util import Color
+from explo import color
 
 VERSION = 0.1
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
@@ -31,21 +31,21 @@ def main():
 
     for filename in args.filename:
         try:
-            print('Loading {}'.format(Color.cyan(filename)))
+            print('Loading {}'.format(color.cyan(filename)))
 
             if from_file(filename):
-                result = Color.green('Success.')
+                result = color.green('Success.')
             else:
-                result = Color.red('No match.')
+                result = color.red('No match.')
 
             print('==> {}'.format(result))
 
         except ParserException as exc:
-            print(Color.yellow('ERROR parsing file %s: %s' % (filename, exc)))
+            print(color.yellow('ERROR parsing file %s: %s' % (filename, exc)))
         except (ConnectionException, ProxyException) as exc:
-            print(Color.yellow('ERROR connecting to host in file %s: %s' % (filename, exc)))
+            print(color.yellow('ERROR connecting to host in file %s: %s' % (filename, exc)))
         except ExploException as exc:
-            print(Color.yellow('ERROR in file %s: %s' % (filename, exc)))
+            print(color.yellow('ERROR in file %s: %s' % (filename, exc)))
 
 def from_file(filename, log=None):
     """ Read file and pass to from_content """

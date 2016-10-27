@@ -7,8 +7,10 @@ setup(
     author='Robin Verton',
     author_email='hello@robinverton.de',
     version='0.1',
+    description='Test web based vulnerabilities from a .yaml file',
     packages=['explo', 'explo.modules'],
-
+    url='https://github.com/dtag-dev-sec/explo',
+    platforms='any',
     install_requires=[
         'requests',
         'pyyaml',

@@ -7,7 +7,8 @@
 from eliot import Message
 
 from explo.connection import http_request
-from explo.util import required_fields, Color
+from explo.util import required_fields
+from explo import color
 
 def execute(block, scope):
     """
@@ -35,7 +36,7 @@ def execute(block, scope):
 
     Message.log(
         level='status',
-        message="Response time: {}, delay_seconds: {}".format(Color.cyan(time_diff), Color.cyan(delay_seconds))
+        message="Response time: {}, delay_seconds: {}".format(color.cyan(time_diff), color.cyan(delay_seconds))
     )
 
     if time_diff > delay_seconds:

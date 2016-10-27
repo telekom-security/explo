@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from eliot import Message
 
 from explo.exceptions import ParserException, ProxyException, ConnectionException
-from explo.util import Color
+from explo import color
 
 proxies = {
     'http': os.environ.get('http_proxy', None),
@@ -83,8 +83,8 @@ def http_request(block, scope):
 def pretty_print_request(req):
     """ Print a request """
 
-    output = '{} {} {}\n'.format(Color.yellow(req.method), Color.cyan(req.url), Color.grayscale[14]('HTTP/1.1'))
-    output += '\n'.join('{}: {}'.format(Color.grayscale[14](k), Color.cyan(v)) for k, v in req.headers.items())
+    output = '{} {} {}\n'.format(color.yellow(req.method), color.cyan(req.url), color.grayscale[14]('HTTP/1.1'))
+    output += '\n'.join('{}: {}'.format(color.grayscale[14](k), color.cyan(v)) for k, v in req.headers.items())
     output += '\n\n{}'.format(req.body)
 
     Message.log(level='request', message=output)
@@ -93,11 +93,11 @@ def pretty_print_response(res):
     """ Print a response """
 
     # Status line
-    output = Color.yellow('HTTP') + Color.grayscale[14]('/1.1 %s %s\n' % (res.status_code, res.reason))
+    output = color.yellow('HTTP') + color.grayscale[14]('/1.1 %s %s\n' % (res.status_code, res.reason))
 
     # Headers
     for name, value in res.headers.items():
-        output += '%s: %s\n' % (Color.grayscale[14](name), Color.cyan(value))
+        output += '%s: %s\n' % (color.grayscale[14](name), color.cyan(value))
 
     output += '\n'
 

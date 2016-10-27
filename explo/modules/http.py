@@ -9,7 +9,8 @@ import re
 from eliot import Message
 
 from explo.connection import http_request
-from explo.util import extract, Color
+from explo.util import extract
+from explo import color
 
 def execute(block, scope):
     """
@@ -41,11 +42,11 @@ def execute(block, scope):
         if not success:
             Message.log(
                 level='status',
-                message="==> Not found in BODY: '%s'" % Color.cyan(keyword))
+                message="==> Not found in BODY: '%s'" % color.cyan(keyword))
         else:
             Message.log(
                 level='status',
-                message="==> Found in BODY: '%s'" % Color.cyan(keyword))
+                message="==> Found in BODY: '%s'" % color.cyan(keyword))
 
     if 'find_regex' in opts:
         pattern = opts['find_regex']
@@ -54,10 +55,10 @@ def execute(block, scope):
         if not success:
             Message.log(
                 level='status',
-                message="==> Not found in BODY: '%s'" % Color.cyan(pattern))
+                message="==> Not found in BODY: '%s'" % color.cyan(pattern))
         else:
             Message.log(
                 level='status',
-                message="==> Found in BODY: '%s'" % Color.cyan(pattern))
+                message="==> Found in BODY: '%s'" % color.cyan(pattern))
 
     return success, scope

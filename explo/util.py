@@ -51,16 +51,18 @@ def extract(data, extract_fields):
 
 # Color code is copied from https://github.com/reorx/python-terminal-color/blob/master/color_simple.py
 
-def make_color(code):
-    def color_func(s):
-        if not sys.stdout.isatty() or Color.NO_COLOR:
-            return s
-        tpl = '\x1b[{}m{}\x1b[0m'
-        return tpl.format(code, s)
-    return color_func
-
+"""
 class Color:
     NO_COLOR = False
+
+    @classmethod
+    def make_color(code):
+        def color_func(s):
+            if not sys.stdout.isatty() or Color.NO_COLOR:
+                return s
+            tpl = '\x1b[{}m{}\x1b[0m'
+            return tpl.format(code, s)
+        return color_func
 
     red = make_color(31)
     green = make_color(32)
@@ -73,3 +75,4 @@ class Color:
     underline = make_color(4)
 
     grayscale = {(i - 232): make_color('38;5;' + str(i)) for i in range(232, 256)}
+"""

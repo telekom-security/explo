@@ -1,5 +1,4 @@
 """ Core HTTP functionalities """
-import click
 import logging
 
 logger = logging.getLogger(__name__)
