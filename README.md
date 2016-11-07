@@ -108,6 +108,7 @@ parameter:
         key: value
     find: search for string
     find_regex: search for (reg|ular)expression
+    find_in_headers: searchstring in headers
     extract:
         variable1: [CSS, '#csrf']
         variable2: [REGEX, '(reg|ular)expression']

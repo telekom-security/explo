@@ -30,6 +30,25 @@ def execute(block, scope):
         }
     }
 
+    if 'find_in_headers' in opts:
+        headers = ''
+        for header in response.headers:
+            headers += '{}: {}\n'.format(header, response.headers[header])
+
+        keyword = opts['find_in_headers']
+        success = (keyword in headers)
+
+        if not success:
+            Message.log(
+                level='status',
+                message="==> Not found in HEADERS: '%s'" % color.cyan(keyword))
+
+            return success, scope
+        else:
+            Message.log(
+                level='status',
+                message="==> Found in HEADERS: '%s'" % color.cyan(keyword))
+
     success = True
 
     if 'extract' in opts:

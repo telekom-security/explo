@@ -100,3 +100,41 @@ parameter:
 
     blocks = explo.core.load_blocks(blocks_raw)
     assert explo.core.process_blocks(blocks)
+
+@responses.activate
+def test_find():
+    """ Test a simple http get and matching for body/headers """
+
+    block_raw = """
+name: test
+description: test
+module: http
+parameter:
+    url: http://test.com/
+    method: GET
+    headers:
+        user-agent: Mozilla/5.0
+        content-type: application/x-www-form-urlencoded
+    body:
+        text: <div id=explo>explo</div>
+    find: body123
+    find_in_headers: header123
+"""
+
+    def request_callback(request):
+        resp_body = 'body123'
+        headers = {'X-Foo:':'header123'}
+        return (200, headers, resp_body)
+
+    responses.add_callback(
+        responses.GET,
+        'http://test.com/',
+        callback=request_callback,
+        content_type='text/html'
+    )
+
+    blocks = explo.core.load_blocks(block_raw)
+
+    result, scope = http.execute(blocks[0], {})
+
+    assert result
