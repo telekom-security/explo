@@ -1,5 +1,4 @@
 import re
-import sys
 from pyquery import PyQuery as pq
 
 from explo.exceptions import ParserException, ExploException
@@ -12,7 +11,7 @@ def required_fields(opts, fields):
     if not all(k in opts for k in fields):
         raise ParserException(
             'not all required parameters were passed. required: ' \
-            ','.join(required_fields)
+            ','.join(fields)
         )
 
 def extract(data, extract_fields):
