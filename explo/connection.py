@@ -49,7 +49,7 @@ def http_request(block, scope):
     # Use mustache template on string
     if isinstance(data, dict):
         for key, val in data.items():
-            data[key] = pystache.render(val, scope)
+            data[key] = pystache.render(str(val), scope)
     elif isinstance(data, six.string_types):
         data = pystache.render(data, scope)
 
