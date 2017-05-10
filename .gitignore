@@ -88,3 +88,5 @@ Temporary Items
 
 #explo
 examples/dtag
+venv
+.vscode

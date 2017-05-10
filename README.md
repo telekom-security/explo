@@ -94,6 +94,10 @@ The following data is made available for following steps:
 
 If a `find_regex` parameter is set, a regular expression match is executed on the response body. If this fails, this module returns a failure and thus stopping the executing of the current workflow (and all steps).
 
+When extracting by regular expressions, use the match group `extract` to mark the value to extract (view below for an example).
+
+For referencing cookies, reference the name of the previous step where cookies should be taken from (`cookies: the_other_step.response.cookies`).
+
 Parameter examples:
 
 ```yaml
@@ -104,6 +108,7 @@ parameter:
     headers:
         User-Agent: explo
         Content-Type: abc
+    cookies: stepname.response.cookies
     body:
         key: value
     find: search for string
@@ -111,7 +116,7 @@ parameter:
     find_in_headers: searchstring in headers
     extract:
         variable1: [CSS, '#csrf']
-        variable2: [REGEX, '(reg|ular)expression']
+        variable2: [REGEX, '<input(.*?)value="(?P<extract>.*?)"']
 ```
 
 ### http\_header
