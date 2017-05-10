@@ -1,6 +1,8 @@
 import re
 from pyquery import PyQuery as pq
 
+from eliot import Message
+
 from explo.exceptions import ParserException, ExploException
 
 def required_fields(opts, fields):
@@ -42,36 +44,17 @@ def extract(data, extract_fields):
             result[name] = found
 
         if method == 'REGEX':
+
+            if not '?P<extract>' in pattern:
+                raise ExploException('extract error: no "extract" match group found in regular expression.')
+
             regex_res = re.search(pattern, data, re.MULTILINE)
             if regex_res:
                 result[name] = regex_res.group('extract')
 
+    if extract_fields.items() and not result:
+        Message.log(
+            level='warning',
+            message='No value found for extracting.')
+
     return result
-
-# Color code is copied from https://github.com/reorx/python-terminal-color/blob/master/color_simple.py
-
-"""
-class Color:
-    NO_COLOR = False
-
-    @classmethod
-    def make_color(code):
-        def color_func(s):
-            if not sys.stdout.isatty() or Color.NO_COLOR:
-                return s
-            tpl = '\x1b[{}m{}\x1b[0m'
-            return tpl.format(code, s)
-        return color_func
-
-    red = make_color(31)
-    green = make_color(32)
-    yellow = make_color(33)
-    blue = make_color(34)
-    magenta = make_color(35)
-    cyan = make_color(36)
-
-    bold = make_color(1)
-    underline = make_color(4)
-
-    grayscale = {(i - 232): make_color('38;5;' + str(i)) for i in range(232, 256)}
-"""

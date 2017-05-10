@@ -136,4 +136,6 @@ def log_stdout(message):
 
             print('\n')
 
-        print(message['message'])
+        level_msg = color.yellow('Warning: ') if level == 'warning' else ''
+
+        print("{}{}".format(level_msg, message['message']))
