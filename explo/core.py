@@ -12,7 +12,7 @@ from explo.modules import (
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 from explo import color
 
-VERSION = 0.1
+VERSION = 0.2
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
 
 parser = argparse.ArgumentParser(description='Explo v{}'.format(VERSION))
@@ -21,6 +21,7 @@ parser.add_argument('filename', nargs='+',
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Activate verbose output')
 
+# global args needed for logging callback
 args = None
 
 def main():

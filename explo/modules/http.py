@@ -30,6 +30,8 @@ def execute(block, scope):
         }
     }
 
+    success = True
+
     if 'find_in_headers' in opts:
         headers = ''
         for header in response.headers:
@@ -49,8 +51,6 @@ def execute(block, scope):
                 level='status',
                 message="==> Found in HEADERS: '%s'" % color.cyan(keyword))
 
-    success = True
-
     if 'extract' in opts:
         scope[name]['extracted'] = extract(response.text, opts['extract'])
 
@@ -62,6 +62,8 @@ def execute(block, scope):
             Message.log(
                 level='status',
                 message="==> Not found in BODY: '%s'" % color.cyan(keyword))
+
+            return success, scope
         else:
             Message.log(
                 level='status',
@@ -75,9 +77,34 @@ def execute(block, scope):
             Message.log(
                 level='status',
                 message="==> Not found in BODY: '%s'" % color.cyan(pattern))
+
+            return success, scope
         else:
             Message.log(
                 level='status',
                 message="==> Found in BODY: '%s'" % color.cyan(pattern))
+
+    if 'expect_response_code' in opts:
+        status_code = opts['expect_response_code']
+        success = (response.status_code == status_code)
+
+        if not success:
+            Message.log(
+                level='status',
+                message="==> HTTP Status is not %s, response code is %s" % (
+                    color.cyan(status_code),
+                    color.red(status_code)
+                )
+            )
+
+            return success, scope
+        else:
+            Message.log(
+                level='status',
+                message="==> HTTP status is valid (%s == %s)" % (
+                    color.cyan(status_code),
+                    color.cyan(status_code)
+                )
+            )
 
     return success, scope

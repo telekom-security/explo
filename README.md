@@ -114,6 +114,7 @@ parameter:
     find: search for string
     find_regex: search for (reg|ular)expression
     find_in_headers: searchstring in headers
+    expect_response_code: 200
     extract:
         variable1: [CSS, '#csrf']
         variable2: [REGEX, '<input(.*?)value="(?P<extract>.*?)"']

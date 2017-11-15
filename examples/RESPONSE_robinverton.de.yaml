@@ -1,0 +1,7 @@
+name: test_response
+description: Test response code to be 200
+module: http
+parameter:
+    url: https://robinverton.de
+    method: GET
+    expect_response_code: 200
