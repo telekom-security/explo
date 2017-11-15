@@ -93,7 +93,7 @@ def execute(block, scope):
                 level='status',
                 message="==> HTTP Status is not %s, response code is %s" % (
                     color.cyan(status_code),
-                    color.red(status_code)
+                    color.red(response.status_code)
                 )
             )
 
