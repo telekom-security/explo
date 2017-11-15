@@ -19,7 +19,7 @@ def execute(block, scope=None):
     except Exception:
         raise Exception('the source field "%s" was not found in the current scope' % block['source'])
 
-    logger.debug("Matching %s for: '%s'" % (block['source'], opts['value']))
+    logger.debug("Matching %s for: '%s'", block['source'], opts['value'])
 
     success = False
 

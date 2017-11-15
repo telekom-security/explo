@@ -6,7 +6,8 @@ from eliot import Message, add_destination
 from explo.modules import (
     http as module_http,
     http_header as module_header,
-    sqli_blind as module_sqli
+    sqli_blind as module_sqli,
+    report as module_report
 )
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 from explo import color
@@ -118,7 +119,8 @@ def module_execute(block, scope):
     modules = {
         'http': module_http,
         'header': module_header,
-        'sqli_blind': module_sqli
+        'sqli_blind': module_sqli,
+        'report': module_report
     }
 
     if not module in modules:
