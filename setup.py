@@ -6,7 +6,7 @@ setup(
     name='explo',
     author='Robin Verton',
     author_email='hello@robinverton.de',
-    version='0.1.2',
+    version='0.2',
     description='Test web based vulnerabilities from a .yaml file',
     packages=['explo', 'explo.modules'],
     url='https://github.com/dtag-dev-sec/explo',
