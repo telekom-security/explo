@@ -78,6 +78,15 @@ except ExploException as err:
     print(err)
 ```
 
+## Options
+
+A http/https proxy and a timeout for requests can be set via environment variables. The default timeout is set to 15 seconds.
+
+    $ export http_proxy=http://proxy:8089
+    $ export https_proxy=https://proxy:8090
+    $ export timeout=10
+    $ explo ...
+
 ## Modules
 
 Modules can be added to improve functionality and classes of security issues.

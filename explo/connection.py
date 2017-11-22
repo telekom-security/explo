@@ -18,6 +18,8 @@ proxies = {
     'https': os.environ.get('https_proxy', None),
 }
 
+timeout = int(os.environ.get('timeout', 15))
+
 def http_request(block, scope):
     """
     Extract data from block and construct http request
@@ -65,7 +67,13 @@ def http_request(block, scope):
 
     try:
         sess = requests.Session()
-        resp = sess.send(request, allow_redirects=allow_redirects, proxies=proxies, verify=False)
+        resp = sess.send(
+            request,
+            allow_redirects=allow_redirects,
+            proxies=proxies,
+            verify=False,
+            timeout=timeout
+        )
     except ProxyError as exc:
         raise ProxyException(exc)
     except Exception as exc:

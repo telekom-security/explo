@@ -12,7 +12,7 @@ from explo.modules import (
 from explo.exceptions import ExploException, ParserException, ConnectionException, ProxyException
 from explo import color
 
-VERSION = 0.2
+VERSION = '0.2.1'
 FIELDS_REQUIRED = ['name', 'description', 'module', 'parameter']
 
 parser = argparse.ArgumentParser(description='Explo v{}'.format(VERSION))
