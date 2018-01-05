@@ -80,6 +80,29 @@ def from_content(content, log=None):
 
     return process_blocks(blocks)
 
+def meta_from_content(content):
+
+    try:
+        blocks = load_blocks(content)
+    except yaml.YAMLError as err:
+        raise ExploException('error parsing document: %s' % err)
+
+    if len(blocks) < 0 or blocks[0].get('module') != 'metadata':
+        return {}
+
+    return blocks[0].get('parameter')
+
+def meta_from_file(filename):
+    """ Read file and pass to meta_from_content """
+
+    try:
+        with open(filename, 'r') as fhandle:
+            content = fhandle.read()
+    except IOError as err:
+        raise ExploException('could not open file %s: %s' % (filename, err))
+
+    return meta_from_content(content)
+
 def load_blocks(content):
     """ Load documents/blocks from a YAML file """
     return [b for b in yaml.safe_load_all(content)]
@@ -88,6 +111,8 @@ def validate_blocks(blocks):
     """ Ensures minimal fields are set for passed block """
 
     for block in blocks:
+        if 'module' in block and block.get('module', '') == 'metadata':
+            continue
 
         if not all(k in block for k in FIELDS_REQUIRED):
             return False
@@ -101,10 +126,14 @@ def process_blocks(blocks):
     last_result = False
 
     for block in blocks:
+        if block['module'] == 'metadata':
+            Message.log(level='status', message='Metadata: %s' % block['parameter'])
+            continue
+
         name = block['name']
         desc = block['description']
 
-        Message.log(level='status', message='Block {}: {}'.format(name, desc))
+        Message.log(level='status', message='---\nBlock {}: {}'.format(name, desc))
 
         last_result, scope = module_execute(block, scope)
 

