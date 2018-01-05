@@ -37,8 +37,9 @@ parameter:
  - [Usage](#usage)
  - [Modules](#modules)
    - [HTTP (Basic)](#http-basic)
-   - [HTTP (Header)](#http-header)
-   - [SQLI (Blind)](#sqli-blind)
+   - [HTTP (Header)](#http_header)
+   - [SQLI (Blind)](#sqli_blind)
+   - [Metadata](#metadata)
 
 In this example definition file the security issue is tested by executing two steps which are run from top to bottom. The last step returns a success or failure, depending on the string 'You have an error in your SQL syntax' to be found.
 
@@ -131,7 +132,7 @@ parameter:
 
 ### http\_header
 
-The http header module allows to check if a response misses a specified set of headers (and values). All other parameters are *identical* to the http module.
+The `http_header` module allows to check if a response misses a specified set of headers (and values). All other parameters are *identical* to the http module.
 
 The following data is made available for other modules:
 
@@ -174,3 +175,26 @@ parameter:
 ```
 
 If the threshold of 5 seconds (delay\_seconds) is exceeded, the check returns true (and thus resulting in a success).
+
+### metadata
+
+The metadata block is a special block which can be added as the first block in a .yaml file to add metadata to a vulnerability for further processing. This becomes usefull when explo is used as a lib and metadata for each vulnerability description can be read with `meta_from_content(content)`. This module does not need a name or description.
+
+Examples:
+
+```yaml
+module: metadata
+parameter:
+    cvss: 8.9
+    author: Robin Verton
+---
+name: login
+description: login with test credentials
+module: http
+parameter:
+    url: http://testphp.vulnweb.com/userinfo.php
+    method: POST
+    body:
+        uname: test
+        pass: test
+```
