@@ -1,0 +1,11 @@
+name: Open Redirect
+description: example.com - Open Redirect via Callback parameter
+module: header
+parameter:
+    url: https://www.company.com/login.html?Callback=https://example.com
+    method: GET
+    headers:
+        User-Agent: Mozilla/5.0
+    expect_response_code: 302
+    headers_required:
+        Location: https://example.com
