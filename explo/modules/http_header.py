@@ -11,42 +11,51 @@ from explo.exceptions import ParserException
 from explo.connection import http_request
 from explo.util import required_fields
 
+
 def execute(block, scope):
     """
     Simple HTTP request, also does basic extracting and finding in the response text
     """
-    opts = block['parameter']
-    name = block['name']
+    opts = block["parameter"]
+    name = block["name"]
 
-    required_fields(opts, ['headers_required'])
+    required_fields(opts, ["headers_required"])
 
     _, response = http_request(block, scope)
 
     scope[name] = {
-        'response': {
-            'content':response.text,
-            'cookies':response.cookies,
-            'headers':response.headers
+        "response": {
+            "content": response.text,
+            "cookies": response.cookies,
+            "headers": response.headers,
         }
     }
 
     success = False
 
-    headers_required = opts['headers_required']
+    headers_required = opts["headers_required"]
 
     if not isinstance(headers_required, dict):
-        raise ParserException('headers_required must be a list of headers')
+        raise ParserException("headers_required must be a list of headers")
 
     for header in headers_required:
         if header in response.headers:
-            if headers_required[header] == '.':
+            if headers_required[header] == ".":
+                success = True
                 continue
 
             if str(headers_required[header]) != response.headers[header]:
                 Message.log(
-                    level='status',
-                    message="Header '%s: %s' different from response header '%s: %s'" % (header, headers_required[header], header, response.headers[header]))
-                success = True
+                    level="status",
+                    message="Header '%s: %s' different from response header '%s: %s'"
+                    % (
+                        header,
+                        headers_required[header],
+                        header,
+                        response.headers[header],
+                    ),
+                )
+                success = False
         else:
-            success = True
+            success = False
     return success, scope
