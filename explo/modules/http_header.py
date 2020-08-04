@@ -31,7 +31,7 @@ def execute(block, scope):
         }
     }
 
-    success = False
+    success = True
 
     headers_required = opts["headers_required"]
 
@@ -39,23 +39,19 @@ def execute(block, scope):
         raise ParserException("headers_required must be a list of headers")
 
     for header in headers_required:
-        if header in response.headers:
-            if headers_required[header] == ".":
-                success = True
-                continue
+        if header not in response.headers:
+            Message.log(
+                level="status",
+                message="Header '%s' is missing!" % header)
+            success = False
+            continue
 
-            if str(headers_required[header]) != response.headers[header]:
-                Message.log(
-                    level="status",
-                    message="Header '%s: %s' different from response header '%s: %s'"
-                    % (
-                        header,
-                        headers_required[header],
-                        header,
-                        response.headers[header],
-                    ),
-                )
-                success = False
-        else:
+        if headers_required[header] == ".":
+            continue
+
+        if str(headers_required[header]) != response.headers[header]:
+            Message.log(
+                level="status",
+                message="Header '%s: %s' different from response header '%s: %s'" % (header, headers_required[header], header, response.headers[header]))
             success = False
     return success, scope
