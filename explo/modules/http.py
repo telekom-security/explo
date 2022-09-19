@@ -52,7 +52,8 @@ def execute(block, scope):
                 message="==> Found in HEADERS: '%s'" % color.cyan(keyword))
 
     if 'extract' in opts:
-        scope[name]['extracted'] = extract(response.text, opts['extract'])
+        headers = '\r\n'.join([a+":"+b for a, b in response.headers.items()])
+        scope[name]['extracted'] = extract(headers+"\r\n\r\n"+response.text, opts['extract'])
 
     if 'find' in opts:
         keyword = opts['find']
