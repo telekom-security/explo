@@ -40,8 +40,10 @@ def http_request(block, scope):
 
     if cookies_path != '':
         try:
-            cookie_module = cookies_path.split('.', 1)[0]
-            cookies = scope[cookie_module]['response']['cookies']
+            for cookie_module_path in cookies_path.split(',', -1):
+                cookie_module = cookie_module_path.split('.', 1)[0]
+                for k, v in scope[cookie_module]['response']['cookies'].items():
+                    cookies[k] = v
         except KeyError:
             Message.log(
                 level='warning',
