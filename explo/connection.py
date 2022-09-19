@@ -59,6 +59,9 @@ def http_request(block, scope):
     for key, val in headers.items():
         headers[key] = pystache.render(str(val), scope)
 
+    opts['url'] = pystache.render(str(opts['url']), scope)
+    opts['method'] = pystache.render(str(opts['method']), scope)
+
     req = requests.Request(opts['method'], opts['url'], headers=headers, data=data, cookies=cookies)
     request = req.prepare()
 
